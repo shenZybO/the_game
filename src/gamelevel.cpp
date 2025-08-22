@@ -1,0 +1,92 @@
+#include "gamelevel.h"
+#include <algorithm>
+#include "Config.hpp"
+
+GameLevel::GameLevel(const char* mapFileName) {
+    // Load the TMX map from the specified file
+    map = LoadTMX(mapFileName);
+    if (map == nullptr) {
+        TraceLog(LOG_ERROR, "Failed to load TMX map: %s", mapFileName);
+    }
+
+    // initialize the camera
+    camera.zoom = 2.0f;
+    camera.offset = { (float)Config::SCREEN_WIDTH / 2, (float)Config::SCREEN_HEIGHT / 2 };
+    camera.rotation = 0.0f;
+}
+
+void GameLevel::UpdateAll(float delta) {
+    // Update all actors in the level
+    for (auto& actor : actors) {
+        if (actor->IsAlive())
+        {
+            actor->Update(delta);
+        }
+    }
+
+    // Cleanup dead actors and noify removal listeners
+    auto iterator = std::remove_if(actors.begin(), actors.end(), 
+        [&](const std::unique_ptr<Actor>& actor) 
+        {
+        // Check if the actor is not alive (destroyed)
+            if (!actor->IsAlive()) {
+                // Notify all removal listeners
+                for (const auto& listener : removalListeners) {
+                    listener(*actor);
+                }
+            return true; // Remove this actor
+        }
+        return false; // Keep this actor
+    });
+
+    // Erase the dead actors from the vector
+    if (iterator != actors.end()) {
+        actors.erase(iterator, actors.end());
+    }
+}
+
+void GameLevel::Render() {
+
+    // Camera follows player, but clamp to map edges
+    Vector2 camTarget = GetPlayer() ? GetPlayer()->GetPosition() : Vector2{0, 0};
+    float halfScreenW = Config::SCREEN_WIDTH / (2 * camera.zoom);
+    float halfScreenH = Config::SCREEN_HEIGHT / (2 * camera.zoom);
+    float maxX = map->width * map->tileWidth - halfScreenW;
+    float maxY = map->height * map->tileHeight - halfScreenH;
+    if (camTarget.x < halfScreenW) camTarget.x = halfScreenW;
+    if (camTarget.x > maxX) camTarget.x = maxX;
+    if (camTarget.y < halfScreenH) camTarget.y = halfScreenH;
+    if (camTarget.y > maxY) camTarget.y = maxY;
+    camera.target = camTarget;
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+    BeginMode2D(camera);
+    AnimateTMX(map);
+    DrawTMX(map, &camera, 0, 0, WHITE);
+
+    // Render all actors in the level
+    for (const auto& actor : actors) 
+    {
+        if (actor->IsAlive()) 
+        {
+            actor->Draw();
+        }
+    }
+
+    EndMode2D();
+    DrawFPS(10, 10);
+    EndDrawing();
+
+}
+
+Player* GameLevel::GetPlayer() const {
+    // Find and return the Player actor in the level
+    for (const auto& actor : actors) {
+        Player* player = dynamic_cast<Player*>(actor.get());
+        if (player != nullptr) {
+            return player;
+        }
+    }
+    return nullptr; // No Player found
+}

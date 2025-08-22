@@ -1,0 +1,74 @@
+# Build directories
+/build/
+
+# CMake files and build artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build.ninja
+compile_commands.json
+
+# Executables and object files
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.o
+*.obj
+*.pdb
+*.out
+
+# IDE and editor directories
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
+
+# Visual Studio
+*.vcxproj*
+*.sln
+*.suo
+*.user
+*.userosscache
+*.vcxproj.filters
+.vs/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Logs
+*.log
+
+# Temp files
+*~
+*.swp
+*.tmp
+
+# Dependency/build subtrees created by CMake's FetchContent or external projects
+build/_deps/
+_deps/
+
+# Generated assets
+# (keep source assets but ignore generated or exported files if any)
+resources/*.tmp
+
+# Coverage
+coverage/
+
+# Misc
+*.bak
+*.old
+
+# clang-format cache (if ever generated)
+.clang-format
+
+# Ignore IDE-specific caches and local settings
+*.iml
+
