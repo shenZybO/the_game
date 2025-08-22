@@ -7,11 +7,11 @@
 // Forward declare GameLevel (reference only needs this)
 class GameLevel;
 
-/* Abstract base class for all game actors - game objects which can perform actions (including game characters and items)
-* Actor needs a posiotion, size and grapical representation.
-*/
+/* Abstract base class for all game actors - game objects which can perform actions (including game
+ * characters and items) Actor needs a posiotion, size and grapical representation.
+ */
 class Actor {
-public:
+   public:
     // Default ctor - keeps compatibility with existing code that constructs Actor without params
     Actor() = default;
 
@@ -20,11 +20,14 @@ public:
         : position{x, y}, defaultAnimation(std::move(anim)), gameLevel(level) {}
 
     // Construct by providing animation parameters; Actor will create its own Animation2D
-    Actor(GameLevel& level, const char* imagePath, int frameCount = 1, float frameDuration = 0.1f, float x = 0.0f, float y = 0.0f)
-        : position{x, y}, defaultAnimation(std::make_unique<Animation2D>(imagePath, frameCount, frameDuration)), gameLevel(level) {}
+    Actor(GameLevel& level, const char* imagePath, int frameCount = 1, float frameDuration = 0.1f,
+          float x = 0.0f, float y = 0.0f)
+        : position{x, y},
+          defaultAnimation(std::make_unique<Animation2D>(imagePath, frameCount, frameDuration)),
+          gameLevel(level) {}
 
     ~Actor() {
-        defaultAnimation.reset(); // Ensure proper cleanup of the unique_ptr
+        defaultAnimation.reset();  // Ensure proper cleanup of the unique_ptr
     }
 
     // Accessor for alive state
@@ -32,7 +35,7 @@ public:
 
     // Method to destroy the actor
     void Destroy() {
-        alive = false; // Mark the actor as not alive
+        alive = false;  // Mark the actor as not alive
     }
 
     // Accessor for position
@@ -43,9 +46,9 @@ public:
         if (defaultAnimation) {
             float frameWidth = defaultAnimation->GetFrameWidth();
             float frameHeight = defaultAnimation->GetFrameHeight();
-            return { position.x, position.y, frameWidth, frameHeight };
+            return {position.x, position.y, frameWidth, frameHeight};
         }
-        return { position.x, position.y, 0.0f, 0.0f }; // Default rectangle if no animation
+        return {position.x, position.y, 0.0f, 0.0f};  // Default rectangle if no animation
     }
 
     // Accessor for the current animation
@@ -53,25 +56,23 @@ public:
 
     /** Base implementation of Update method
      * Derived classes can override this to implement specific behavior
-    */
-    virtual void Update(float delta)
-    {
+     */
+    virtual void Update(float delta) {
         if (defaultAnimation) {
             defaultAnimation->Update(delta);
         }
     };
 
     // Draw the actor
-    virtual void Draw() 
-    {
+    virtual void Draw() {
         if (defaultAnimation) {
             defaultAnimation->Draw(position);
         }
     }
 
-protected:
+   protected:
     Vector2 position{};
-    std::unique_ptr<Animation2D> defaultAnimation; // optional owned animation
-    GameLevel& gameLevel; // non-owning reference to the current game level
-    bool alive = true; // flag to indicate if the actor is still alive (meaning not destroyed)
+    std::unique_ptr<Animation2D> defaultAnimation;  // optional owned animation
+    GameLevel& gameLevel;  // non-owning reference to the current game level
+    bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)
 };

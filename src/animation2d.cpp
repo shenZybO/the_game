@@ -6,8 +6,7 @@ Animation2D::Animation2D(const char* imagePath, int frameCount, float frameDurat
       frameDuration(frameDuration > 0.0f ? frameDuration : 0.1f),
       currentFrame(0),
       timer(0.0f),
-      ownsTexture(true) {
-}
+      ownsTexture(true) {}
 
 Animation2D::Animation2D(Texture2D texture, int frameCount, float frameDuration, bool ownsTexture)
     : texture(texture),
@@ -15,8 +14,7 @@ Animation2D::Animation2D(Texture2D texture, int frameCount, float frameDuration,
       frameDuration(frameDuration > 0.0f ? frameDuration : 0.1f),
       currentFrame(0),
       timer(0.0f),
-      ownsTexture(ownsTexture) {
-}
+      ownsTexture(ownsTexture) {}
 
 Animation2D::~Animation2D() {
     if (ownsTexture) {
@@ -27,7 +25,7 @@ Animation2D::~Animation2D() {
 }
 
 void Animation2D::Update(float delta) {
-    if (frameCount > 1) // only update if there are multiple frames
+    if (frameCount > 1)  // only update if there are multiple frames
     {
         timer += delta;
         // advance frames while timer exceeds frameDuration (handles large delta)
@@ -45,31 +43,30 @@ void Animation2D::Draw(Vector2 position, Color tint, float scale, bool flipped) 
 
     if (frameCount <= 1) {
         // static texture; use DrawTexturePro to support flipping via negative source width
-        srcRec = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+        srcRec = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
         if (flipped) {
-            srcRec.x = (float)texture.width; // start at right edge
-            srcRec.width = -srcRec.width;    // negative width flips horizontally
+            srcRec.x = (float)texture.width;  // start at right edge
+            srcRec.width = -srcRec.width;     // negative width flips horizontally
         }
 
-        dstRec = { position.x, position.y, (float)texture.width * scale, (float)texture.height * scale };
-    } 
-    else
-    {
+        dstRec = {position.x, position.y, (float)texture.width * scale,
+                  (float)texture.height * scale};
+    } else {
         // animated texture; calculate source rectangle based on current frame
         float frameWidth = (float)texture.width / (float)frameCount;
         float frameHeight = (float)texture.height;
 
         if (!flipped) {
-            srcRec = { frameWidth * currentFrame, 0.0f, frameWidth, frameHeight };
+            srcRec = {frameWidth * currentFrame, 0.0f, frameWidth, frameHeight};
         } else {
             // start from right edge of the current frame and use negative width to flip
-            srcRec = { frameWidth * (currentFrame + 1), 0.0f, -frameWidth, frameHeight };
+            srcRec = {frameWidth * (currentFrame + 1), 0.0f, -frameWidth, frameHeight};
         }
 
-        dstRec = { position.x, position.y, frameWidth * scale, frameHeight * scale };
+        dstRec = {position.x, position.y, frameWidth * scale, frameHeight * scale};
     }
 
-    Vector2 origin = { 0.0f, 0.0f };
+    Vector2 origin = {0.0f, 0.0f};
     DrawTexturePro(texture, srcRec, dstRec, origin, 0.0f, tint);
     return;
 }

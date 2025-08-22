@@ -17,7 +17,7 @@ void InputManager::UnregisterListener(KeyboardListener* listener) {
 
 void InputManager::Update() {
     // For simplicity, check left, right and space keys for press/release and notify listeners
-    const int keysToCheck[] = { KEY_LEFT, KEY_RIGHT, KEY_SPACE };
+    const int keysToCheck[] = {KEY_LEFT, KEY_RIGHT, KEY_SPACE};
     for (int k : keysToCheck) {
         if (IsKeyPressed(k)) {
             for (auto l : listeners) l->OnKeyPressed(k);

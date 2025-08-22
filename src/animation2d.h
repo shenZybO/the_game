@@ -3,12 +3,13 @@
 #include "raylib.h"
 
 class Animation2D {
-public:
+   public:
     // Load from file (Animation2D takes ownership of the loaded texture)
     Animation2D(const char* imagePath, int frameCount = 1, float frameDuration = 0.1f);
 
     // Use an existing texture. If ownsTexture is true, the destructor will unload the texture.
-    Animation2D(Texture2D texture, int frameCount = 1, float frameDuration = 0.1f, bool ownsTexture = false);
+    Animation2D(Texture2D texture, int frameCount = 1, float frameDuration = 0.1f,
+                bool ownsTexture = false);
 
     ~Animation2D();
 
@@ -24,10 +25,12 @@ public:
     float GetFrameDuration() const { return frameDuration; }
 
     // Get current frame dimensions (in pixels)
-    float GetFrameWidth() const { return (frameCount > 0) ? ((float)texture.width / (float)frameCount) : (float)texture.width; }
+    float GetFrameWidth() const {
+        return (frameCount > 0) ? ((float)texture.width / (float)frameCount) : (float)texture.width;
+    }
     float GetFrameHeight() const { return (float)texture.height; }
 
-private:
+   private:
     Texture2D texture;
     int frameCount;
     float frameDuration;

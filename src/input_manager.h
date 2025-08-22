@@ -5,7 +5,7 @@
 
 /* Singleton input manager that polls keyboard and dispatches press/release events to listeners. */
 class InputManager {
-public:
+   public:
     static InputManager& Instance();
 
     void RegisterListener(KeyboardListener* listener);
@@ -14,7 +14,7 @@ public:
     // Poll keys and dispatch events; call each frame
     void Update();
 
-private:
+   private:
     InputManager() = default;
     std::vector<KeyboardListener*> listeners;
 };

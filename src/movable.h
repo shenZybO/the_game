@@ -3,11 +3,16 @@
 #include "actor.h"
 #include "raylib.h"
 
-/* Abstract base for actors that can move. Extracted from Player: velocity, moveSpeed and isGrounded. */
+/* Abstract base for actors that can move. Extracted from Player: velocity, moveSpeed and
+ * isGrounded. */
 class Movable : public Actor {
-public:
-    Movable(GameLevel& level, const char* imagePath = nullptr, int frameCount = 1, float frameDuration = 0.1f, float x = 0.0f, float y = 0.0f, float moveSpeed = 0.0f)
-        : Actor(level, imagePath ? imagePath : "", frameCount, frameDuration, x, y), velocity{0, 0}, moveSpeed(moveSpeed), isGrounded(false) {}
+   public:
+    Movable(GameLevel& level, const char* imagePath = nullptr, int frameCount = 1,
+            float frameDuration = 0.1f, float x = 0.0f, float y = 0.0f, float moveSpeed = 0.0f)
+        : Actor(level, imagePath ? imagePath : "", frameCount, frameDuration, x, y),
+          velocity{0, 0},
+          moveSpeed(moveSpeed),
+          isGrounded(false) {}
 
     virtual ~Movable() = default;
 
@@ -27,7 +32,7 @@ public:
     // Move the actor by the given delta in world units
     void MoveBy(float dx, float dy);
 
-protected:
+   protected:
     Vector2 velocity;
     float moveSpeed;
     bool isGrounded;

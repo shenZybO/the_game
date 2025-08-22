@@ -5,7 +5,7 @@
 
 /* Move action - moves a Movable actor left or right when performed. */
 class Move : public Action {
-public:
+   public:
     enum class Direction { Left, Right };
 
     Move(Movable& target, Direction dir, float customSpeed = 0.0f)
@@ -13,7 +13,7 @@ public:
     ~Move();
     virtual void Perform(float delta) override;
 
-private:
+   private:
     Direction moveDir;
-    float customSpeed; // optional override for move speed magnitude
+    float customSpeed;  // optional override for move speed magnitude
 };

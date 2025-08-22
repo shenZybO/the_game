@@ -11,33 +11,31 @@ GameLevel::GameLevel(const char* mapFileName) {
 
     // initialize the camera
     camera.zoom = 2.0f;
-    camera.offset = { (float)Config::SCREEN_WIDTH / 2, (float)Config::SCREEN_HEIGHT / 2 };
+    camera.offset = {(float)Config::SCREEN_WIDTH / 2, (float)Config::SCREEN_HEIGHT / 2};
     camera.rotation = 0.0f;
 }
 
 void GameLevel::UpdateAll(float delta) {
     // Update all actors in the level
     for (auto& actor : actors) {
-        if (actor->IsAlive())
-        {
+        if (actor->IsAlive()) {
             actor->Update(delta);
         }
     }
 
     // Cleanup dead actors and noify removal listeners
-    auto iterator = std::remove_if(actors.begin(), actors.end(), 
-        [&](const std::unique_ptr<Actor>& actor) 
-        {
-        // Check if the actor is not alive (destroyed)
+    auto iterator =
+        std::remove_if(actors.begin(), actors.end(), [&](const std::unique_ptr<Actor>& actor) {
+            // Check if the actor is not alive (destroyed)
             if (!actor->IsAlive()) {
                 // Notify all removal listeners
                 for (const auto& listener : removalListeners) {
                     listener(*actor);
                 }
-            return true; // Remove this actor
-        }
-        return false; // Keep this actor
-    });
+                return true;  // Remove this actor
+            }
+            return false;  // Keep this actor
+        });
 
     // Erase the dead actors from the vector
     if (iterator != actors.end()) {
@@ -46,7 +44,6 @@ void GameLevel::UpdateAll(float delta) {
 }
 
 void GameLevel::Render() {
-
     // Camera follows player, but clamp to map edges
     Vector2 camTarget = GetPlayer() ? GetPlayer()->GetPosition() : Vector2{0, 0};
     float halfScreenW = Config::SCREEN_WIDTH / (2 * camera.zoom);
@@ -66,10 +63,8 @@ void GameLevel::Render() {
     DrawTMX(map, &camera, 0, 0, WHITE);
 
     // Render all actors in the level
-    for (const auto& actor : actors) 
-    {
-        if (actor->IsAlive()) 
-        {
+    for (const auto& actor : actors) {
+        if (actor->IsAlive()) {
             actor->Draw();
         }
     }
@@ -77,7 +72,6 @@ void GameLevel::Render() {
     EndMode2D();
     DrawFPS(10, 10);
     EndDrawing();
-
 }
 
 Player* GameLevel::GetPlayer() const {
@@ -88,5 +82,5 @@ Player* GameLevel::GetPlayer() const {
             return player;
         }
     }
-    return nullptr; // No Player found
+    return nullptr;  // No Player found
 }

@@ -7,11 +7,13 @@
 #include "input_manager.h"
 
 class Player : public Movable, public KeyboardListener {
-public:
-    Player(GameLevel& level, float x, float y, float moveSpeed, float jumpStrength, const char* imagePath, int frameCount, float frameSpeed) : 
-        Movable(level, imagePath, frameCount, frameSpeed, x, y, moveSpeed), jumpStrength(jumpStrength) {
-            InputManager::Instance().RegisterListener(this);
-        }
+   public:
+    Player(GameLevel& level, float x, float y, float moveSpeed, float jumpStrength,
+           const char* imagePath, int frameCount, float frameSpeed)
+        : Movable(level, imagePath, frameCount, frameSpeed, x, y, moveSpeed),
+          jumpStrength(jumpStrength) {
+        InputManager::Instance().RegisterListener(this);
+    }
     ~Player() { InputManager::Instance().UnregisterListener(this); }
 
     void Update(float delta);
@@ -22,7 +24,7 @@ public:
     void OnKeyPressed(int key) override;
     void OnKeyReleased(int key) override;
 
-private:
+   private:
     float jumpStrength;
     // Pointer to currently registered Move action (if any)
     Action* activeMoveAction = nullptr;

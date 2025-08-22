@@ -5,7 +5,7 @@
 #include <memory>
 
 class GameLogic {
-public:
+   public:
     static GameLogic& Instance();
 
     // register an action - ownership is transferred to GameLogic
@@ -17,7 +17,7 @@ public:
     // Update all active actions; remove expired ones
     void Update(float delta);
 
-private:
+   private:
     GameLogic() = default;
     ~GameLogic() = default;
     GameLogic(const GameLogic&) = delete;

@@ -8,14 +8,11 @@ void Move::Perform(float delta) {
     float speed = (customSpeed > 0.0f) ? customSpeed : movableActor.GetMoveSpeed();
 
     float displacement = speed * delta;
-    if (moveDir == Direction::Left) 
-    {
+    if (moveDir == Direction::Left) {
         movableActor.MoveBy(-displacement, 0.0f);
         // keep horizontal velocity in sync for drawing/facing logic
         movableActor.SetVelocityX(-speed);
-    } 
-    else 
-    {
+    } else {
         movableActor.MoveBy(displacement, 0.0f);
         // keep horizontal velocity in sync for drawing/facing logic
         movableActor.SetVelocityX(speed);
