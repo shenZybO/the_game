@@ -16,15 +16,13 @@ int main() {
                                             "../resources/player_idle.png", 2, 1.0f);
 
     while (!WindowShouldClose()) {
-        float delta = GetFrameTime();
-
         // Poll input and dispatch events
         InputManager::Instance().Update();
 
         // Update game logic (perform active actions)
-        GameLogic::Instance().Update(delta);
+        GameLogic::Instance().Update();
         // Update all actors
-        gameLevel0.UpdateAll(delta);
+        gameLevel0.UpdateAll();
         // Render the game level
         gameLevel0.Render();
     }

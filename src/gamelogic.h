@@ -15,7 +15,7 @@ class GameLogic {
     bool DeregisterAction(Action* actionPtr);
 
     // Update all active actions; remove expired ones
-    void Update(float delta);
+    void Update();
 
    private:
     GameLogic() = default;

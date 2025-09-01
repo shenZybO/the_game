@@ -9,13 +9,29 @@ GameLevel::GameLevel(const char* mapFileName) {
         TraceLog(LOG_ERROR, "Failed to load TMX map: %s", mapFileName);
     }
 
+    // Cache the ground layer pointer to avoid repeated name lookups
+    groundLayer = nullptr;
+    if (map != nullptr) {
+        for (uint32_t i = 0; i < map->layersLength; ++i) {
+            if (map->layers[i].type == LAYER_TYPE_TILE_LAYER) {
+                if (strcmp(map->layers[i].name, "ground") == 0) {
+                    groundLayer = const_cast<TmxLayer*>(&map->layers[i]);
+                    break;
+                }
+            }
+        }
+    }
+
     // initialize the camera
     camera.zoom = 2.0f;
     camera.offset = {(float)Config::SCREEN_WIDTH / 2, (float)Config::SCREEN_HEIGHT / 2};
     camera.rotation = 0.0f;
 }
 
-void GameLevel::UpdateAll(float delta) {
+void GameLevel::UpdateAll() {
+    // Get delta time for this frame
+    float delta = GetFrameTime();
+
     // Update all actors in the level
     for (auto& actor : actors) {
         if (actor->IsAlive()) {
@@ -43,6 +59,9 @@ void GameLevel::UpdateAll(float delta) {
     }
 }
 
+/**
+ * Render the level and all actors
+ */
 void GameLevel::Render() {
     // Camera follows player, but clamp to map edges
     Vector2 camTarget = GetPlayer() ? GetPlayer()->GetPosition() : Vector2{0, 0};
@@ -83,4 +102,22 @@ Player* GameLevel::GetPlayer() const {
         }
     }
     return nullptr;  // No Player found
+}
+
+TmxLayer* GameLevel::GetGroundLayer() const {
+    TmxLayer* result = nullptr;
+    if (map == nullptr) {
+        return result;
+    }
+
+    for (uint32_t i = 0; i < map->layersLength; ++i) {
+        if (map->layers[i].type == LAYER_TYPE_TILE_LAYER) {
+            if (strcmp(map->layers[i].name, "ground") == 0) {
+                result = const_cast<TmxLayer*>(&map->layers[i]);
+                break;
+            }
+        }
+    }
+
+    return result;
 }

@@ -17,10 +17,8 @@ class GameLevel {
 
     /*
      * @brief Update all actors and internal state for the level
-     *
-     * @param delta Time since last frame in seconds
      */
-    void UpdateAll(float delta);
+    void UpdateAll();
 
     /*
      * @brief Render the level and all actors
@@ -33,6 +31,15 @@ class GameLevel {
      * @return Player* Pointer to the Player instance or nullptr
      */
     Player* GetPlayer() const;
+
+    /**
+     * @brief Find and return the TMX layer named "ground" from the map.
+     *
+     * @return TmxLayer* pointer to the ground layer or nullptr when not found or map missing
+     */
+    TmxLayer* GetGroundLayer() const;
+    // Returns the cached ground layer pointer (may be nullptr)
+    TmxLayer const* GetCachedGroundLayer() const { return groundLayer; }
 
     // Accessor for the TMX map
     TmxMap* GetMap() const { return map; }
@@ -65,6 +72,8 @@ class GameLevel {
 
    private:
     TmxMap* map = nullptr;  // Pointer to the TMX map
+    // Cached pointer to the tile layer named "ground" (non-owning)
+    TmxLayer* groundLayer = nullptr;
     // container of actors belonging to this level
     std::vector<std::unique_ptr<Actor>> actors;
     // listeners called when an actor is removed

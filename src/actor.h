@@ -48,7 +48,7 @@ class Actor {
             float frameHeight = defaultAnimation->GetFrameHeight();
             return {position.x, position.y, frameWidth, frameHeight};
         }
-        return {position.x, position.y, 0.0f, 0.0f};  // Default rectangle if no animation
+        return {position.x, position.y, 10.0f, 10.0f};  // Default rectangle if no animation
     }
 
     // Accessor for the current animation
@@ -71,7 +71,7 @@ class Actor {
     }
 
    protected:
-    Vector2 position{};
+    Vector2 position;
     std::unique_ptr<Animation2D> defaultAnimation;  // optional owned animation
     GameLevel& gameLevel;  // non-owning reference to the current game level
     bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)

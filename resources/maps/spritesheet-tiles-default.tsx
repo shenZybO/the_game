@@ -40,6 +40,11 @@
    <frame tileid="108" duration="250"/>
   </animation>
  </tile>
+ <tile id="162">
+  <objectgroup draworder="index" id="2">
+   <object id="8" x="0" y="0" width="64" height="64"/>
+  </objectgroup>
+ </tile>
  <tile id="163">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="64" height="64"/>

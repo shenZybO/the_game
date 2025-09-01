@@ -32,7 +32,15 @@ class Movable : public Actor {
     // Move the actor by the given delta in world units
     void MoveBy(float dx, float dy);
 
+    // Override Actor::Update to update grounded state and apply gravity
+    void Update(float delta) override;
+
+   private:
+    // Check if this movable is on the ground and correct position if needed
+    bool CheckAndFixGroundCollision(float delta);
+
    protected:
+    Vector2 prevPosition;
     Vector2 velocity;
     float moveSpeed;
     bool isGrounded;

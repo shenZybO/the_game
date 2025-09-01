@@ -19,7 +19,10 @@ bool GameLogic::DeregisterAction(Action* actionPtr) {
     return false;
 }
 
-void GameLogic::Update(float delta) {
+void GameLogic::Update() {
+    // get delta time for this frame
+    float delta = GetFrameTime();
+
     // Perform each action; advance time; remove expired
     for (auto it = actions.begin(); it != actions.end();) {
         Action* a = it->get();

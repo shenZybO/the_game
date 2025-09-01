@@ -7,8 +7,7 @@
 
 #define GROUND_LAYER_NAME "ground"
 
-TmxObject tmxCollisionObject = {};  // TODO: resolve colision detection with ground layer
-bool wantsToJump = false;           // TODO: add this in can jump interface
+bool wantsToJump = false;  // TODO: add this in can jump interface
 
 // Destructor is defined inline in header (unregisters input listener)
 
@@ -24,49 +23,19 @@ void Player::Draw() {
 }
 
 void Player::Update(float delta) {
-    // call base class Update
-    Actor::Update(delta);
-
-    // Input is handled by InputManager via KeyboardListener callbacks
-
-    TmxLayer* groundLayer = nullptr;
-    TmxMap* map = gameLevel.GetMap();
-
-    // get the ground layer from the map (use an iterator to go through map's layers)
-    for (uint8_t i = 0; i < map->layersLength; i++) {
-        if ((map->layers[i].type == LAYER_TYPE_TILE_LAYER) &&
-            (strcmp(map->layers[i].name, GROUND_LAYER_NAME) == 0)) {
-            groundLayer = &map->layers[i];
-            break;
-        }
-    }
-
-    isGrounded =
-        CheckCollisionTMXTileLayersRec(map, groundLayer, 1, GetRect(), &tmxCollisionObject);
-
-    // compare player object position with collisionObject position, if player is below the
-    // collisionObjet, set player position to stand on colision object (bottom of playet is equal to
-    // collisionObject top)
-    if (isGrounded && (tmxCollisionObject.y <= (position.y + GetRect().height))) {
-        position.y = tmxCollisionObject.y - GetRect().height +
-                     1;  // set player position to stand on the collision object
-    }
+    // Movable::Update handles animation, grounded state and gravity
+    Movable::Update(delta);
 
     // Gravity
     if (!isGrounded || wantsToJump) {
         // Apply gravity only if not grounded
         velocity.y += 800.0f * delta;  // gravity constant
         wantsToJump = false;           // reset jump request after applying jump
+        // Update vertical position
+        position.y += velocity.y * delta;
     } else {
         velocity.y = 0;  // reset vertical velocity when grounded
     }
-
-    // Update vertical position
-    position.y += velocity.y * delta;
-
-    // debug output to see current y velocity, y position and grounded state
-    // TraceLog(LOG_INFO, "Y Velocity: %f, Y Position: %f, IsGrounded: %s", velocity.y, position.y,
-    // isGrounded ? "true" : "false");
 }
 
 void Player::OnKeyPressed(int key) {
