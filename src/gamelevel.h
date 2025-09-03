@@ -10,43 +10,58 @@
 
 class GameLevel {
    public:
-    /*
-     * @brief Construct a new GameLevel
+    /**
+     * @brief Construct a new GameLevel from a TMX map file.
+     *
+     * @param mapFileName Path to the TMX map file to load.
      */
     GameLevel(const char* mapFileName);
 
-    /*
-     * @brief Update all actors and internal state for the level
+    /**
+     * @brief Update all actors and internal state for the level.
      */
     void UpdateAll();
 
-    /*
-     * @brief Render the level and all actors
+    /**
+     * @brief Render the level and all actors.
      */
     void Render();
 
-    /*
-     * @brief Return a pointer to the single Player actor in this level
+    /**
+     * @brief Return a pointer to the Player actor in this level.
      *
-     * @return Player* Pointer to the Player instance or nullptr
+     * @return Player* Pointer to the Player instance or nullptr when no player exists.
      */
     Player* GetPlayer() const;
 
     /**
      * @brief Find and return the TMX layer named "ground" from the map.
      *
-     * @return TmxLayer* pointer to the ground layer or nullptr when not found or map missing
+     * @return TmxLayer* pointer to the ground layer or nullptr when not found or map missing.
      */
     TmxLayer* GetGroundLayer() const;
-    // Returns the cached ground layer pointer (may be nullptr)
+
+    /**
+     * @brief Return the cached ground layer pointer (non-owning).
+     */
     TmxLayer const* GetCachedGroundLayer() const { return groundLayer; }
 
-    // Accessor for the TMX map
+    /**
+     * @brief Accessor for the TMX map pointer.
+     */
     TmxMap* GetMap() const { return map; }
-    // Accessors for actors in this level
+
+    /**
+     * @brief Accessor for the list of actors in the level.
+     */
     const std::vector<std::unique_ptr<Actor>>& GetActors() const { return actors; }
 
-    // Add an actor to the level
+    /**
+     * @brief Add an actor of type T to the level.
+     *
+     * The actor is constructed in-place and stored in the level's actor container. When
+     * adding a Player, any existing Player instance will be replaced.
+     */
     template <typename T, typename... Args>
     T& addActor(Args&&... args) {
         // Create a new actor of type T

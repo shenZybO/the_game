@@ -80,7 +80,28 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
 // Override of Actor::Update: keep animation update, then update grounded state and apply gravity
 void Movable::Update(float delta) {
     // call base implementation (updates animation)
+    // Update both default and moving animations as needed. The moving animation is updated when the
+    // actor is in a moving state so it is ready for drawing.
     Actor::Update(delta);
+    if (HasMovingAnimation()) {
+        if (actorState == Actor::STATE_MOVING_LEFT || actorState == Actor::STATE_MOVING_RIGHT) {
+            movingAnimation->Update(delta);
+        } else {
+            // Keep the moving animation at its first frame when not moving so it doesn't advance.
+        }
+    }
 
     isGrounded = CheckAndFixGroundCollision(delta);
+}
+
+// Override Draw to choose moving animation when appropriate
+void Movable::Draw() {
+    // If moving state and we have a moving animation, draw it. Otherwise fall back to default animation.
+    if ((actorState == Actor::STATE_MOVING_LEFT || actorState == Actor::STATE_MOVING_RIGHT) && HasMovingAnimation()) {
+        bool flipped = (actorState == Actor::STATE_MOVING_LEFT);
+        movingAnimation->Draw(position, WHITE, 1.0f, flipped);
+    } else {
+        // Use Actor's draw behavior (which draws defaultAnimation)
+        Actor::Draw();
+    }
 }

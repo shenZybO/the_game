@@ -15,6 +15,9 @@ int main() {
     Player& p = gameLevel0.addActor<Player>(100.0f, 100.0f, 200.0f, 400.0f,
                                             "../resources/player_idle.png", 2, 1.0f);
 
+    p.SetMovingAnimation(std::make_unique<Animation2D>(
+        "../resources/player_walk.png", 2, 0.2f));  // 4 frames, 0.1s per frame
+
     while (!WindowShouldClose()) {
         // Poll input and dispatch events
         InputManager::Instance().Update();

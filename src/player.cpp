@@ -12,14 +12,8 @@ bool wantsToJump = false;  // TODO: add this in can jump interface
 // Destructor is defined inline in header (unregisters input listener)
 
 void Player::Draw() {
-    // Determine facing based on horizontal velocity: when moving left, flip the sprite
-    bool facingLeft = (velocity.x < 0);
-
-    // Use the base class animation to draw at the player's position
-    if (defaultAnimation) {
-        // Draw takes position, tint, scale, flipped
-        defaultAnimation->Draw(position, WHITE, 1.0f, facingLeft);
-    }
+    // call Movable::Draw to handle moving animation and flipping
+    Movable::Draw();
 }
 
 void Player::Update(float delta) {

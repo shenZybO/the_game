@@ -12,6 +12,34 @@ class GameLevel;
  */
 class Actor {
    public:
+    /**
+     * @brief Possible runtime states for an actor.
+     *
+     * Can be extended (jumping, falling, dying, etc.).
+     */
+    enum ActorState {
+        STATE_IDLE = 0,
+        STATE_MOVING_LEFT,
+        STATE_MOVING_RIGHT,
+        STATE_JUMPING,
+        STATE_FALLING,
+        STATE_DYING
+    };
+
+    /**
+     * @brief Set the current runtime state for the actor.
+     *
+     * @param s New actor state.
+     */
+    void SetState(ActorState s) { actorState = s; }
+
+    /**
+     * @brief Get the current runtime state for the actor.
+     *
+     * @return ActorState Current state value.
+     */
+    ActorState GetState() const { return actorState; }
+
     // Default ctor - keeps compatibility with existing code that constructs Actor without params
     Actor() = default;
 
@@ -30,18 +58,32 @@ class Actor {
         defaultAnimation.reset();  // Ensure proper cleanup of the unique_ptr
     }
 
-    // Accessor for alive state
+    /**
+     * @brief Query whether the actor is alive (not destroyed).
+     *
+     * @return true when actor is alive.
+     */
     bool IsAlive() const { return alive; }
 
-    // Method to destroy the actor
+    /**
+     * @brief Mark the actor as destroyed.
+     *
+     * Sets the internal alive flag to false.
+     */
     void Destroy() {
         alive = false;  // Mark the actor as not alive
     }
 
-    // Accessor for position
+    /**
+     * @brief Get current world position of the actor.
+     */
     Vector2 GetPosition() const { return position; }
 
-    // Accessor for the actor's rectangle
+    /**
+     * @brief Get the actor's bounding rectangle based on its animation frame size.
+     *
+     * Returns a default small rectangle when no animation is available.
+     */
     Rectangle GetRect() const {
         if (defaultAnimation) {
             float frameWidth = defaultAnimation->GetFrameWidth();
@@ -51,7 +93,11 @@ class Actor {
         return {position.x, position.y, 10.0f, 10.0f};  // Default rectangle if no animation
     }
 
-    // Accessor for the current animation
+    /**
+     * @brief Access the current primary animation.
+     *
+     * @return const Animation2D* Pointer to the animation or nullptr.
+     */
     const Animation2D* GetAnimation() const { return defaultAnimation.get(); }
 
     /** Base implementation of Update method
@@ -75,4 +121,5 @@ class Actor {
     std::unique_ptr<Animation2D> defaultAnimation;  // optional owned animation
     GameLevel& gameLevel;  // non-owning reference to the current game level
     bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)
+    ActorState actorState = STATE_IDLE; /**< Current runtime state */
 };

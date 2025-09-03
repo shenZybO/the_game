@@ -12,14 +12,17 @@ void Move::Perform(float delta) {
         movableActor.MoveBy(-displacement, 0.0f);
         // keep horizontal velocity in sync for drawing/facing logic
         movableActor.SetVelocityX(-speed);
+        movableActor.SetState(Actor::STATE_MOVING_LEFT);
     } else {
         movableActor.MoveBy(displacement, 0.0f);
         // keep horizontal velocity in sync for drawing/facing logic
         movableActor.SetVelocityX(speed);
+        movableActor.SetState(Actor::STATE_MOVING_RIGHT);
     }
 }
 
 Move::~Move() {
     Movable& movableActor = dynamic_cast<Movable&>(GetActor());
     movableActor.SetVelocityX(0.0f);
+    movableActor.SetState(Actor::STATE_IDLE);
 }

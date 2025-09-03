@@ -4,39 +4,83 @@
 
 class Animation2D {
    public:
-    // Load from file (Animation2D takes ownership of the loaded texture)
+    /**
+     * @brief Construct an Animation2D and load a texture from file.
+     *
+     * The Animation2D instance takes ownership of the loaded texture.
+     *
+     * @param imagePath Path to the image file.
+     * @param frameCount Number of frames horizontally in the sprite sheet.
+     * @param frameDuration Duration in seconds for each frame.
+     */
     Animation2D(const char* imagePath, int frameCount = 1, float frameDuration = 0.1f);
 
-    // Use an existing texture. If ownsTexture is true, the destructor will unload the texture.
+    /**
+     * @brief Construct using an existing Texture2D.
+     *
+     * When ownsTexture is true the destructor will unload the texture.
+     *
+     * @param texture Existing texture to use for frames.
+     * @param frameCount Number of frames in texture.
+     * @param frameDuration Seconds per frame.
+     * @param ownsTexture If true, this object will unload texture on destruction.
+     */
     Animation2D(Texture2D texture, int frameCount = 1, float frameDuration = 0.1f,
                 bool ownsTexture = false);
 
+    /**
+     * @brief Destroy the Animation2D and free owned resources.
+     */
     ~Animation2D();
 
-    // Advance animation based on elapsed time (seconds)
+    /**
+     * @brief Advance the animation by delta seconds.
+     *
+     * @param delta Elapsed time in seconds since last update.
+     */
     void Update(float delta);
 
-    // Draw current frame at position. Uses scale to resize sprite.
-    // If 'flipped' is true the sprite is drawn mirrored horizontally (left-facing).
+    /**
+     * @brief Draw the current animation frame at the given position.
+     *
+     * @param position World position to draw the sprite.
+     * @param tint Color tint to apply to the sprite.
+     * @param scale Uniform scale factor for drawing.
+     * @param flipped If true, draw the sprite mirrored horizontally.
+     */
     void Draw(Vector2 position, Color tint = WHITE, float scale = 1.0f, bool flipped = false) const;
 
-    // Accessors
+    /**
+     * @brief Get the total number of frames.
+     *
+     * @return int Frame count.
+     */
     int GetFrameCount() const { return frameCount; }
+
+    /**
+     * @brief Get the configured frame duration (seconds).
+     */
     float GetFrameDuration() const { return frameDuration; }
 
-    // Get current frame dimensions (in pixels)
+    /**
+     * @brief Width of a single animation frame in pixels.
+     */
     float GetFrameWidth() const {
         return (frameCount > 0) ? ((float)texture.width / (float)frameCount) : (float)texture.width;
     }
+
+    /**
+     * @brief Height of a single animation frame in pixels.
+     */
     float GetFrameHeight() const { return (float)texture.height; }
 
    private:
-    Texture2D texture;
-    int frameCount;
-    float frameDuration;
+    Texture2D texture; /**< Underlying texture used for animation frames. */
+    int frameCount;    /**< Number of frames in the texture horizontally. */
+    float frameDuration; /**< Duration in seconds per frame. */
 
-    int currentFrame;
-    float timer;
+    int currentFrame; /**< Index of the current frame. */
+    float timer;      /**< Accumulated time used to advance frames. */
 
-    bool ownsTexture;
+    bool ownsTexture; /**< True when this instance owns the texture and should unload it. */
 };
