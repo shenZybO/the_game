@@ -46,9 +46,8 @@ class Animation2D {
      * @param position World position to draw the sprite.
      * @param tint Color tint to apply to the sprite.
      * @param scale Uniform scale factor for drawing.
-     * @param flipped If true, draw the sprite mirrored horizontally.
      */
-    void Draw(Vector2 position, Color tint = WHITE, float scale = 1.0f, bool flipped = false) const;
+    void Draw(Vector2 position, Color tint = WHITE, float scale = 1.0f) const;
 
     /**
      * @brief Get the total number of frames.
@@ -74,13 +73,15 @@ class Animation2D {
      */
     float GetFrameHeight() const { return (float)texture.height; }
 
+    void SetFlipped(bool f) { flipped = f; }
+
    private:
     Texture2D texture; /**< Underlying texture used for animation frames. */
     int frameCount;    /**< Number of frames in the texture horizontally. */
     float frameDuration; /**< Duration in seconds per frame. */
+    bool flipped = false; /**< If true, draw the sprite mirrored horizontally. */
 
     int currentFrame; /**< Index of the current frame. */
     float timer;      /**< Accumulated time used to advance frames. */
-
     bool ownsTexture; /**< True when this instance owns the texture and should unload it. */
 };

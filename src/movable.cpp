@@ -3,8 +3,10 @@
 #include "raytmx.h"
 
 void Movable::MoveBy(float dx, float dy) {
-    TmxMap* map = gameLevel.GetMap();
+    TmxMap* map = self.GetGameLevel().GetMap();
 
+    Vector2& position = self.GetPosition();
+    Rectangle rect = self.GetRect();
     position.x += dx;
     position.y += dy;
 
@@ -12,17 +14,19 @@ void Movable::MoveBy(float dx, float dy) {
     if (position.x < 0) {
         position.x = 0;
     }
-    if (position.x > map->width * map->tileWidth - GetRect().width) {
-        position.x = map->width * map->tileWidth - GetRect().width;
+    if (position.x > map->width * map->tileWidth - rect.width) {
+        position.x = map->width * map->tileWidth - rect.width;
     }
-    if (position.y > map->height * map->tileHeight - GetRect().height) {
-        position.y = map->height * map->tileHeight - GetRect().height;
+    if (position.y > map->height * map->tileHeight - rect.height) {
+        position.y = map->height * map->tileHeight - rect.height;
         velocity.y = 0;  // reset vertical velocity when clamped to bottom
     }
 }
 
 // Helper: check collision with given ground layer and, if colliding, snap the actor to stand on it
 bool Movable::CheckAndFixGroundCollision(float delta) {
+    const GameLevel& gameLevel = self.GetGameLevel();
+
     TmxLayer const* ground = gameLevel.GetCachedGroundLayer();
     TmxMap* map = gameLevel.GetMap();
 
@@ -39,7 +43,7 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
     if (verticalDisplacement >= 0.0f) {
         uint32_t hitCount = 0;
         // Build a swept rectangle that covers from current rect down to the expected rect
-        Rectangle swept = GetRect();
+        Rectangle swept = self.GetRect();
         swept.height += verticalDisplacement;  // extend downwards to include the travel path
 
         TmxObject* collisionObjects =
@@ -51,7 +55,7 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
         }
 
         // Only snap if collision top lies between previous bottom and new bottom (within tolerance)
-        float bottomBefore = position.y + GetRect().height;
+        float bottomBefore = self.GetPosition().y + self.GetRect().height;
         float bottomAfter = bottomBefore + verticalDisplacement;
         float bestCollisionTop = collisionObjects[0].y;  // take the first hit for now;
         bool snap = false;
@@ -69,7 +73,7 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
 
         if (!snap) return false;
         // snap to top of collision and stop vertical motion
-        position.y = bestCollisionTop - GetRect().height + 1;
+        self.GetPosition().y = bestCollisionTop - self.GetRect().height + 1;
         velocity.y = 0.0f;
         return true;
     }
@@ -77,31 +81,39 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
     return false;
 }
 
-// Override of Actor::Update: keep animation update, then update grounded state and apply gravity
+// Keep move animation updated, then update grounded state and apply gravity
 void Movable::Update(float delta) {
-    // call base implementation (updates animation)
-    // Update both default and moving animations as needed. The moving animation is updated when the
-    // actor is in a moving state so it is ready for drawing.
-    Actor::Update(delta);
-    if (HasMovingAnimation()) {
-        if (actorState == Actor::STATE_MOVING_LEFT || actorState == Actor::STATE_MOVING_RIGHT) {
-            movingAnimation->Update(delta);
-        } else {
-            // Keep the moving animation at its first frame when not moving so it doesn't advance.
+
+    if (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT) {
+        if (movingAnimation) {
+            self.SetCurrentAnimation(movingAnimation);
+            movingAnimation->SetFlipped(self.GetState() == Actor::STATE_MOVING_LEFT);
         }
+    } else {
+        self.ResetToDefaultAnimation();
     }
 
     isGrounded = CheckAndFixGroundCollision(delta);
-}
 
-// Override Draw to choose moving animation when appropriate
-void Movable::Draw() {
-    // If moving state and we have a moving animation, draw it. Otherwise fall back to default animation.
-    if ((actorState == Actor::STATE_MOVING_LEFT || actorState == Actor::STATE_MOVING_RIGHT) && HasMovingAnimation()) {
-        bool flipped = (actorState == Actor::STATE_MOVING_LEFT);
-        movingAnimation->Draw(position, WHITE, 1.0f, flipped);
+    // apply general gravity if not grounded (falling possible even for Actor not able to jump)
+    if (!isGrounded || self.GetState() == Actor::STATE_JUMPING) {
+        velocity.y += MoveConfig::GRAVITY_CONSTANT * delta;  // gravity constant
+        // Update vertical position
+        self.GetPosition().y += velocity.y * delta; 
     } else {
-        // Use Actor's draw behavior (which draws defaultAnimation)
-        Actor::Draw();
+        velocity.y = 0;  // reset vertical velocity when grounded
+    }
+
+    if (velocity.y < 0) {
+        self.SetState(Actor::STATE_JUMPING);
+    } else if (!isGrounded && velocity.y > 0) {
+        self.SetState(Actor::STATE_FALLING);
+    } else if (velocity.x < 0) {
+        self.SetState(Actor::STATE_MOVING_LEFT);
+    } else if (velocity.x > 0) {
+        self.SetState(Actor::STATE_MOVING_RIGHT);
+    } else {
+        self.SetState(Actor::STATE_IDLE);
+        self.ResetToDefaultAnimation();
     }
 }

@@ -7,8 +7,8 @@
 class Action {
    public:
     // durationSeconds == 0 -> not timed (performed indefinitely until deregistered)
-    Action(Actor& target, float durationSeconds = 0.0f)
-        : actor(target), duration(durationSeconds), elapsed(0.0f) {}
+    Action(Actor& target, float durationSeconds = 0.0f, bool oneShot = false)
+        : actor(target), duration(durationSeconds), oneShot(oneShot), elapsed(0.0f) {}
     virtual ~Action() = default;
 
     // Called each update tick. Implementations perform their logic.
@@ -21,10 +21,13 @@ class Action {
     void AdvanceTime(float delta) {
         if (IsTimed()) elapsed += delta;
     }
-    bool IsExpired() const { return IsTimed() && (elapsed >= duration); }
+    // Check if action duration has been exceeded
+    bool IsExpired() const { return (IsTimed() && (elapsed >= duration)) || (oneShot && performedOnce); }
 
    protected:
     Actor& actor;    // non-owning reference to the actor on which the action will be performed
     float duration;  // seconds; 0 means infinite
+    bool oneShot;   // if true, action is performed only once per registration
+    bool performedOnce = false; // internal flag to track if oneShot action has been performed at least once
     float elapsed;   // seconds
 };

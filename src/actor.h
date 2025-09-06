@@ -26,6 +26,29 @@ class Actor {
         STATE_DYING
     };
 
+    // Default ctor - keeps compatibility with existing code that constructs Actor without params
+    Actor() = default;
+
+    // Construct with an owned Animation2D (takes ownership)
+    Actor(GameLevel& level, std::unique_ptr<Animation2D> anim, float x = 0.0f, float y = 0.0f)
+        : position{x, y}, defaultAnimation(std::move(anim)), gameLevel(level) {
+            currentAnimation = defaultAnimation;
+        }
+
+    // Construct by providing animation parameters; Actor will create its own Animation2D
+    Actor(GameLevel& level, const char* imagePath, int frameCount = 1, float frameDuration = 0.1f,
+          float x = 0.0f, float y = 0.0f)
+        : position{x, y},
+          defaultAnimation(std::make_shared<Animation2D>(imagePath, frameCount, frameDuration)),
+          gameLevel(level) {
+            currentAnimation = defaultAnimation;
+          }
+
+    virtual ~Actor() {
+        defaultAnimation.reset();  // Ensure proper cleanup of animation
+        currentAnimation.reset();
+    }
+
     /**
      * @brief Set the current runtime state for the actor.
      *
@@ -39,24 +62,6 @@ class Actor {
      * @return ActorState Current state value.
      */
     ActorState GetState() const { return actorState; }
-
-    // Default ctor - keeps compatibility with existing code that constructs Actor without params
-    Actor() = default;
-
-    // Construct with an owned Animation2D (takes ownership)
-    Actor(GameLevel& level, std::unique_ptr<Animation2D> anim, float x = 0.0f, float y = 0.0f)
-        : position{x, y}, defaultAnimation(std::move(anim)), gameLevel(level) {}
-
-    // Construct by providing animation parameters; Actor will create its own Animation2D
-    Actor(GameLevel& level, const char* imagePath, int frameCount = 1, float frameDuration = 0.1f,
-          float x = 0.0f, float y = 0.0f)
-        : position{x, y},
-          defaultAnimation(std::make_unique<Animation2D>(imagePath, frameCount, frameDuration)),
-          gameLevel(level) {}
-
-    ~Actor() {
-        defaultAnimation.reset();  // Ensure proper cleanup of the unique_ptr
-    }
 
     /**
      * @brief Query whether the actor is alive (not destroyed).
@@ -77,7 +82,7 @@ class Actor {
     /**
      * @brief Get current world position of the actor.
      */
-    Vector2 GetPosition() const { return position; }
+    Vector2& GetPosition() { return position; }
 
     /**
      * @brief Get the actor's bounding rectangle based on its animation frame size.
@@ -85,9 +90,9 @@ class Actor {
      * Returns a default small rectangle when no animation is available.
      */
     Rectangle GetRect() const {
-        if (defaultAnimation) {
-            float frameWidth = defaultAnimation->GetFrameWidth();
-            float frameHeight = defaultAnimation->GetFrameHeight();
+        if (currentAnimation) {
+            float frameWidth = currentAnimation->GetFrameWidth();
+            float frameHeight = currentAnimation->GetFrameHeight();
             return {position.x, position.y, frameWidth, frameHeight};
         }
         return {position.x, position.y, 10.0f, 10.0f};  // Default rectangle if no animation
@@ -98,27 +103,34 @@ class Actor {
      *
      * @return const Animation2D* Pointer to the animation or nullptr.
      */
-    const Animation2D* GetAnimation() const { return defaultAnimation.get(); }
+    const Animation2D* GetCurrentAnimation() const { return currentAnimation.get(); }
+
+    void SetCurrentAnimation(std::shared_ptr<Animation2D> anim) { currentAnimation = anim; }
+
+    void ResetToDefaultAnimation() { currentAnimation = defaultAnimation; }
+
+    const GameLevel& GetGameLevel() const { return gameLevel; }
 
     /** Base implementation of Update method
      * Derived classes can override this to implement specific behavior
      */
     virtual void Update(float delta) {
-        if (defaultAnimation) {
-            defaultAnimation->Update(delta);
+        if (currentAnimation) {
+            currentAnimation->Update(delta);
         }
     };
 
     // Draw the actor
     virtual void Draw() {
-        if (defaultAnimation) {
-            defaultAnimation->Draw(position);
+        if (currentAnimation) {
+            currentAnimation->Draw(position);
         }
     }
 
    protected:
     Vector2 position;
-    std::unique_ptr<Animation2D> defaultAnimation;  // optional owned animation
+    std::shared_ptr<Animation2D> defaultAnimation;  // default animation (when in default or idle state)
+    std::shared_ptr<Animation2D> currentAnimation;  // current animation to be drawn
     GameLevel& gameLevel;  // non-owning reference to the current game level
     bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)
     ActorState actorState = STATE_IDLE; /**< Current runtime state */

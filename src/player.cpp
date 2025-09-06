@@ -4,32 +4,21 @@
 #include "move.h"
 #include "gamelogic.h"
 #include "gamelevel.h"
-
-#define GROUND_LAYER_NAME "ground"
-
-bool wantsToJump = false;  // TODO: add this in can jump interface
+#include "jump.h"
 
 // Destructor is defined inline in header (unregisters input listener)
 
 void Player::Draw() {
-    // call Movable::Draw to handle moving animation and flipping
-    Movable::Draw();
+    // call Actor::Draw for default drawing behavior
+    Actor::Draw();
 }
 
 void Player::Update(float delta) {
-    // Movable::Update handles animation, grounded state and gravity
+    // Actor::Update for default animation update
+    Actor::Update(delta);
+
     Movable::Update(delta);
 
-    // Gravity
-    if (!isGrounded || wantsToJump) {
-        // Apply gravity only if not grounded
-        velocity.y += 800.0f * delta;  // gravity constant
-        wantsToJump = false;           // reset jump request after applying jump
-        // Update vertical position
-        position.y += velocity.y * delta;
-    } else {
-        velocity.y = 0;  // reset vertical velocity when grounded
-    }
 }
 
 void Player::OnKeyPressed(int key) {
@@ -47,8 +36,8 @@ void Player::OnKeyPressed(int key) {
     }
 
     if (key == KEY_SPACE && isGrounded) {
-        velocity.y = -jumpStrength;
-        wantsToJump = true;
+        auto act = std::make_unique<Jump>(*this);
+        GameLogic::Instance().RegisterAction(std::move(act));
     }
 }
 

@@ -8,9 +8,11 @@ class Move : public Action {
    public:
     enum class Direction { Left, Right };
 
-    Move(Movable& target, Direction dir, float customSpeed = 0.0f)
+    Move(Actor& target, Direction dir, float customSpeed = 0.0f)
         : Action(target), moveDir(dir), customSpeed(customSpeed) {}
+
     ~Move();
+    
     virtual void Perform(float delta) override;
 
    private:

@@ -37,7 +37,7 @@ void Animation2D::Update(float delta) {
     return;
 }
 
-void Animation2D::Draw(Vector2 position, Color tint, float scale, bool flipped) const {
+void Animation2D::Draw(Vector2 position, Color tint, float scale) const {
     Rectangle srcRec{};
     Rectangle dstRec{};
 
