@@ -31,6 +31,14 @@ class Movable /* : public Actor */ {
       isGrounded(false),
       movingAnimation(std::make_shared<Animation2D>(moveAnim)) {}
 
+  Movable(Actor& self, GameTypes::AnimationData moveAnim, GameTypes::AnimationData fallAnim, float moveSpeed = 0.0f)
+    : self(self),
+      velocity{0, 0},
+      moveSpeed(moveSpeed),
+      isGrounded(false),
+      movingAnimation(std::make_shared<Animation2D>(moveAnim)),
+      fallingAnimation(std::make_shared<Animation2D>(fallAnim)) {}
+
   /**
    * @brief Virtual destructor.
    */
@@ -103,6 +111,7 @@ class Movable /* : public Actor */ {
     Vector2 prevPosition;
     float moveSpeed;
     std::shared_ptr<Animation2D> movingAnimation; /**< Optional moving animation; falls back to defaultAnimation */
+    std::shared_ptr<Animation2D> fallingAnimation; /**< Optional falling animation; falls back to defaultAnimation */
     // Check if this movable is on the ground and correct position if needed
     bool CheckAndFixGroundCollision(float delta);
 

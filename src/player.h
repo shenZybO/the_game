@@ -48,6 +48,15 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
             PlayerInit();
     }
 
+    Player(GameLevel& level, float x, float y, float jumpStrength,
+           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim,
+           GameTypes::AnimationData jumpAnim, GameTypes::AnimationData fallAnim)
+        : Actor(level, idleAnim, x, y),
+          Movable(*this, moveAnim, fallAnim, moveSpeed),
+          Jumpable(jumpStrength, jumpAnim) {
+            PlayerInit();
+    }
+
     /**
      * @brief Destroy the Player and unregister keyboard listener.
      */

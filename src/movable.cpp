@@ -115,9 +115,10 @@ void Movable::Update(float delta) {
         self.ResetToDefaultAnimation();
     }
 
-    if (movingAnimation && (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
+    if (fallingAnimation && self.GetState() == Actor::STATE_FALLING) {
+        self.SetCurrentAnimation(fallingAnimation);
+    } else if (movingAnimation && (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
         self.SetCurrentAnimation(movingAnimation);
     }
-
 
 }

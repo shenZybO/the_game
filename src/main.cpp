@@ -25,7 +25,8 @@ int main(int argc, char** argv) {
                                             PlayerConfig::DEFAULT_MOVE_SPEED,
                                             PlayerConfig::IDLE_ANIM,
                                             PlayerConfig::WALK_ANIM,
-                                            PlayerConfig::JUMP_ANIM);
+                                            PlayerConfig::JUMP_ANIM,
+                                            PlayerConfig::FALL_ANIM);
 
     while (!WindowShouldClose()) {
         // Poll input and dispatch events
