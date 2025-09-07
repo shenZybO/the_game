@@ -5,6 +5,7 @@
 #include "gamelogic.h"
 #include "gamelevel.h"
 #include "jump.h"
+#include "types.h"
 
 // Destructor is defined inline in header (unregisters input listener)
 
@@ -16,11 +17,9 @@ void Player::Draw() {
 void Player::Update(float delta) {
     // Actor::Update for default animation update
     Actor::Update(delta);
-
-    Movable::Update(delta);
-    // call Jumpable::Update after Movable::Update
+    // Update jump state/vertical forces before generic movement integration
     Jumpable::Update(delta);
-
+    Movable::Update(delta);
 }
 
 void Player::OnKeyPressed(int key) {

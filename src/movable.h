@@ -24,16 +24,12 @@ class Movable /* : public Actor */ {
    *
    * If movingImagePath is null or empty, the actor's default animation will be used for moving.
    */
-  Movable(Actor& self, const char* movingImagePath, int movingFrameCount, float movingFrameDuration,
-    float moveSpeed = 0.0f)
+  Movable(Actor& self, GameTypes::AnimationData moveAnim, float moveSpeed = 0.0f)
     : self(self),
       velocity{0, 0},
       moveSpeed(moveSpeed),
-      isGrounded(false) {
-    if (movingImagePath != nullptr && movingImagePath[0] != '\0') {
-      movingAnimation = std::make_shared<Animation2D>(movingImagePath, movingFrameCount, movingFrameDuration);
-    }
-  }
+      isGrounded(false),
+      movingAnimation(std::make_shared<Animation2D>(moveAnim)) {}
 
   /**
    * @brief Virtual destructor.

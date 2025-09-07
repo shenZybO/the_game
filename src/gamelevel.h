@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <string_view>
 #include "raytmx.h"
 #include "actor.h"
 #include "Config.hpp"
@@ -15,7 +16,7 @@ class GameLevel {
      *
      * @param mapFileName Path to the TMX map file to load.
      */
-    GameLevel(const char* mapFileName);
+    GameLevel(std::string_view mapFileName);
 
     /**
      * @brief Update all actors and internal state for the level.

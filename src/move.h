@@ -15,6 +15,6 @@ class Move : public Action {
     void OnPerform(float delta) override;
 
    private:
-    GameTypes::Direction moveDir;
+    const GameTypes::Direction moveDir;
     float customSpeed;  // optional override for move speed magnitude
 };

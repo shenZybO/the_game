@@ -24,33 +24,28 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      * @param frameSpeed Frame duration for animation.
      */
     Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed,
-           const char* imagePath, int frameCount, float frameSpeed)
-        : Actor(level, imagePath, frameCount, frameSpeed, x, y),
+           float moveSpeed, GameTypes::AnimationData idleAnim)
+        : Actor(level, idleAnim, x, y),
           Movable(*this, moveSpeed),
           Jumpable(jumpStrength) {
-        InputManager::Instance().RegisterListener(this);
+            PlayerInit();
     }
 
     Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed,
-           const char* imagePath, int frameCount, float frameSpeed,
-           const char* moveImagePath, int moveFrameCount, float moveFrameSpeed)
-        : Actor(level, imagePath, frameCount, frameSpeed, x, y),
-          Movable(*this, moveImagePath, moveFrameCount, moveFrameSpeed, moveSpeed),
+           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim)
+        : Actor(level, idleAnim, x, y),
+          Movable(*this, moveAnim),
           Jumpable(jumpStrength) {
-        InputManager::Instance().RegisterListener(this);
+            PlayerInit();
     }
 
     Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed,
-           const char* imagePath, int frameCount, float frameSpeed,
-           const char* moveImagePath, int moveFrameCount, float moveFrameSpeed,
-           const char* jumpImagePath, int jumpFrameCount, float jumpFrameSpeed)
-        : Actor(level, imagePath, frameCount, frameSpeed, x, y),
-          Movable(*this, moveImagePath, moveFrameCount, moveFrameSpeed, moveSpeed),
-          Jumpable(jumpStrength, jumpImagePath, jumpFrameCount, jumpFrameSpeed) {
-            InputManager::Instance().RegisterListener(this);
+           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim,
+           GameTypes::AnimationData jumpAnim)
+        : Actor(level, idleAnim, x, y),
+          Movable(*this, moveAnim, moveSpeed),
+          Jumpable(jumpStrength, jumpAnim) {
+            PlayerInit();
     }
 
     /**
@@ -86,4 +81,9 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      * @brief KeyboardListener callback: key released event.
      */
     void OnKeyReleased(int key) override;
+
+  private:
+    void PlayerInit() {
+        InputManager::Instance().RegisterListener(this);
+    }
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include "raylib.h"
 
 class Animation2D {
@@ -9,11 +10,8 @@ class Animation2D {
      *
      * The Animation2D instance takes ownership of the loaded texture.
      *
-     * @param imagePath Path to the image file.
-     * @param frameCount Number of frames horizontally in the sprite sheet.
-     * @param frameDuration Duration in seconds for each frame.
      */
-    Animation2D(const char* imagePath, int frameCount = 1, float frameDuration = 0.1f);
+    Animation2D(GameTypes::AnimationData animData);
 
     /**
      * @brief Construct using an existing Texture2D.

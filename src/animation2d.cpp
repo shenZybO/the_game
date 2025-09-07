@@ -1,9 +1,11 @@
+#include "types.h"
 #include "animation2d.h"
+#include "asset_manager.h"
 
-Animation2D::Animation2D(const char* imagePath, int frameCount, float frameDuration)
-    : texture(LoadTexture(imagePath)),
-      frameCount(frameCount > 0 ? frameCount : 1),
-      frameDuration(frameDuration > 0.0f ? frameDuration : 0.1f),
+Animation2D::Animation2D(GameTypes::AnimationData animData)
+    : texture(LoadTexture(AssetManager::GetAssetPath(animData.texturePath).string().c_str())),
+      frameCount(animData.frameCount > 0 ? animData.frameCount : 1),
+      frameDuration(animData.frameDuration > 0.0f ? animData.frameDuration : 0.1f),
       currentFrame(0),
       timer(0.0f),
       ownsTexture(true) {}
@@ -68,5 +70,4 @@ void Animation2D::Draw(Vector2 position, bool flipped, Color tint, float scale) 
 
     Vector2 origin = {0.0f, 0.0f};
     DrawTexturePro(texture, srcRec, dstRec, origin, 0.0f, tint);
-    return;
 }

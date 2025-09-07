@@ -1,19 +1,19 @@
 #pragma once
 
+#include "types.h"
 #include "movable.h"
 #include "action.h"
+#include "animation2d.h"
+#include <memory>
 
 class Jumpable : virtual public Movable {
     public:
         Jumpable(float jumpStrength) 
             : Movable(*this), jumpStrength(jumpStrength) {}
 
-        Jumpable(float jumpStrength, const char* jumpingImagePath, int jumpingFrameCount, float jumpingFrameDuration) 
-            : Movable(*this), jumpStrength(jumpStrength) {
-            if (jumpingImagePath != nullptr && jumpingImagePath[0] != '\0') {
-                jumpingAnimation = std::make_shared<Animation2D>(jumpingImagePath, jumpingFrameCount, jumpingFrameDuration);
-            }
-        }
+        Jumpable(float jumpStrength, GameTypes::AnimationData jumpingAnim)
+            : Movable(*this), jumpStrength(jumpStrength), 
+            jumpingAnimation(std::make_shared<Animation2D>(jumpingAnim)) {}
 
         ~Jumpable() override = default;
         

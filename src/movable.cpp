@@ -100,9 +100,7 @@ void Movable::Update(float delta) {
         self.SetFacingDirection(GameTypes::Direction::Left);
     } else if(velocity.x > 0) {
         self.SetFacingDirection(GameTypes::Direction::Right);
-    } else{
-        // do nothing, keep current facing direction
-    }
+    } // else keep current facing
 
     if (velocity.y < 0) {
         self.SetState(Actor::STATE_JUMPING);
@@ -117,10 +115,8 @@ void Movable::Update(float delta) {
         self.ResetToDefaultAnimation();
     }
 
-    if (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT) {
-        if (movingAnimation) {
-            self.SetCurrentAnimation(movingAnimation);
-        }
+    if (movingAnimation && (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
+        self.SetCurrentAnimation(movingAnimation);
     }
 
 

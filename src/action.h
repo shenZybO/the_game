@@ -12,13 +12,16 @@ class Action {
     virtual ~Action() = default;
 
     // Called each update tick. Implementations perform their logic.
-    virtual void Perform(float delta) final {
+    void Perform(float delta) {
+        if (IsExpired()) {
+            return; // already performed once, skip further calls
+        }
         // Call the derived class implementation
         OnPerform(delta);
         performedOnce = true; // mark that the oneShot action has been performed
     }
 
-    Actor& GetActor() const { return actor; }
+    Actor& GetActor() { return actor; }
 
     bool IsTimed() const { return duration > 0.0f; }
     // Advance internal timer; call after Perform

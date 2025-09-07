@@ -5,25 +5,27 @@
 #include "player.h"
 #include "gamelogic.h"
 #include "gamelevel.h"
+#include "asset_manager.h"
 
-int main() {
+int main(int argc, char** argv) {
+    using namespace std::filesystem;
+    // Find executable path
+    path exePath = canonical(argv[0]).parent_path();
+
+    // Set assets relative to executable
+    AssetManager::SetAssetRoot(exePath / "../resources");
+
     InitWindow(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, "THE GAME");
     SetTargetFPS(Config::TARGET_FPS);
 
-    GameLevel gameLevel0("../resources/maps/lvl_0.tmx");
+    GameLevel gameLevel0(GameConfig::LEVELS[0]);
     // Add a player actor to the game level
     Player& p = gameLevel0.addActor<Player>(100.0f /* initial x */, 100.0f /* initial y */, 
                                             PlayerConfig::DEFAULT_JUMP_STRENGTH,
                                             PlayerConfig::DEFAULT_MOVE_SPEED,
-                                            PlayerConfig::IDLE_ANIM.data(),
-                                            PlayerConfig::IDLE_ANIM_FRAMES,
-                                            PlayerConfig::IDLE_ANIM_FRAME_DURATION,
-                                            PlayerConfig::WALK_ANIM.data(),
-                                            PlayerConfig::WALK_ANIM_FRAMES,
-                                            PlayerConfig::WALK_ANIM_FRAME_DURATION,
-                                            PlayerConfig::JUMP_ANIM.data(),
-                                            PlayerConfig::JUMP_ANIM_FRAMES,
-                                            PlayerConfig::JUMP_ANIM_FRAME_DURATION);
+                                            PlayerConfig::IDLE_ANIM,
+                                            PlayerConfig::WALK_ANIM,
+                                            PlayerConfig::JUMP_ANIM);
 
     while (!WindowShouldClose()) {
         // Poll input and dispatch events

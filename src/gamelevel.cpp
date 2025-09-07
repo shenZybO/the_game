@@ -1,10 +1,11 @@
 #include "gamelevel.h"
 #include <algorithm>
 #include "Config.hpp"
+#include "asset_manager.h"
 
-GameLevel::GameLevel(const char* mapFileName) {
+GameLevel::GameLevel(std::string_view mapFileName) {
     // Load the TMX map from the specified file
-    map = LoadTMX(mapFileName);
+    map = LoadTMX(AssetManager::GetAssetPath(mapFileName).string().c_str());
     if (map == nullptr) {
         TraceLog(LOG_ERROR, "Failed to load TMX map: %s", mapFileName);
     }

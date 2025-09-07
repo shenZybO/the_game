@@ -37,10 +37,9 @@ class Actor {
         }
 
     // Construct by providing animation parameters; Actor will create its own Animation2D
-    Actor(GameLevel& level, const char* imagePath, int frameCount = 1, float frameDuration = 0.1f,
-          float x = 0.0f, float y = 0.0f)
+    Actor(GameLevel& level, GameTypes::AnimationData idleAnim, float x = 0.0f, float y = 0.0f)
         : position{x, y},
-          defaultAnimation(std::make_shared<Animation2D>(imagePath, frameCount, frameDuration)),
+          defaultAnimation(std::make_shared<Animation2D>(idleAnim)),
           gameLevel(level) {
             currentAnimation = defaultAnimation;
           }
@@ -129,7 +128,7 @@ class Actor {
     // Draw the actor
     virtual void Draw() {
         if (currentAnimation) {
-            currentAnimation->Draw(position, facingDirection == GameTypes::Direction::Left ? true : false);
+            currentAnimation->Draw(position, facingDirection == GameTypes::Direction::Left);
         }
     }
 
