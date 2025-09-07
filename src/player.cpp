@@ -18,12 +18,14 @@ void Player::Update(float delta) {
     Actor::Update(delta);
 
     Movable::Update(delta);
+    // call Jumpable::Update after Movable::Update
+    Jumpable::Update(delta);
 
 }
 
 void Player::OnKeyPressed(int key) {
     if ((key == KEY_LEFT || key == KEY_RIGHT)) {
-        Move::Direction dir = (key == KEY_LEFT) ? Move::Direction::Left : Move::Direction::Right;
+        GameTypes::Direction dir = (key == KEY_LEFT) ? GameTypes::Direction::Left : GameTypes::Direction::Right;
         auto act = std::make_unique<Move>(*this, dir);
         Action* raw = act.get();
         // if there is an active move action, deregister it first
@@ -35,7 +37,7 @@ void Player::OnKeyPressed(int key) {
         activeMoveAction = raw;
     }
 
-    if (key == KEY_SPACE && isGrounded) {
+    if (key == KEY_SPACE && CanJump()) {
         auto act = std::make_unique<Jump>(*this);
         GameLogic::Instance().RegisterAction(std::move(act));
     }

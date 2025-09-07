@@ -84,15 +84,6 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
 // Keep move animation updated, then update grounded state and apply gravity
 void Movable::Update(float delta) {
 
-    if (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT) {
-        if (movingAnimation) {
-            self.SetCurrentAnimation(movingAnimation);
-            movingAnimation->SetFlipped(self.GetState() == Actor::STATE_MOVING_LEFT);
-        }
-    } else {
-        self.ResetToDefaultAnimation();
-    }
-
     isGrounded = CheckAndFixGroundCollision(delta);
 
     // apply general gravity if not grounded (falling possible even for Actor not able to jump)
@@ -102,6 +93,15 @@ void Movable::Update(float delta) {
         self.GetPosition().y += velocity.y * delta; 
     } else {
         velocity.y = 0;  // reset vertical velocity when grounded
+    }
+
+    // resolve facing direction
+    if(velocity.x < 0) {
+        self.SetFacingDirection(GameTypes::Direction::Left);
+    } else if(velocity.x > 0) {
+        self.SetFacingDirection(GameTypes::Direction::Right);
+    } else{
+        // do nothing, keep current facing direction
     }
 
     if (velocity.y < 0) {
@@ -116,4 +116,12 @@ void Movable::Update(float delta) {
         self.SetState(Actor::STATE_IDLE);
         self.ResetToDefaultAnimation();
     }
+
+    if (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT) {
+        if (movingAnimation) {
+            self.SetCurrentAnimation(movingAnimation);
+        }
+    }
+
+
 }

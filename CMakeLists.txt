@@ -68,7 +68,7 @@ add_executable(the_game
   src/animation2d.cpp
   src/gamelevel.cpp
   src/movable.cpp
-  src/canJump.cpp
+  src/jumpable.cpp
   src/jump.cpp
 )
 

@@ -1,27 +1,23 @@
 #include "move.h"
 #include "movable.h"
 
-void Move::Perform(float delta) {
+void Move::OnPerform(float delta) {
     // Ensure target is a Movable
-    try {
-        Movable& movableActor = dynamic_cast<Movable&>(actor);
-        float speed = (customSpeed > 0.0f) ? customSpeed : movableActor.GetMoveSpeed();
-
-        float displacement = speed * delta;
-        if (moveDir == Direction::Left) {
-            movableActor.MoveBy(-displacement, 0.0f);
-            // keep horizontal velocity in sync for drawing/facing logic
-            movableActor.SetVelocityX(-speed);
-            actor.SetState(Actor::STATE_MOVING_LEFT);
-        } else {
-            movableActor.MoveBy(displacement, 0.0f);
-            // keep horizontal velocity in sync for drawing/facing logic
-            movableActor.SetVelocityX(speed);
-            actor.SetState(Actor::STATE_MOVING_RIGHT);
-        }
-    } catch (const std::bad_cast& e) {
-        // Target actor is not Movable; do nothing
+    Movable* movableActor = dynamic_cast<Movable*>(&actor);
+    if (!movableActor) {
         return;
+    }
+    float speed = (customSpeed > 0.0f) ? customSpeed : movableActor->GetMoveSpeed();
+
+    float displacement = speed * delta;
+    if (moveDir == GameTypes::Direction::Left) {
+        movableActor->MoveBy(-displacement, 0.0f);
+        // keep horizontal velocity in sync for drawing/facing logic
+        movableActor->SetVelocityX(-speed);
+    } else {
+        movableActor->MoveBy(displacement, 0.0f);
+        // keep horizontal velocity in sync for drawing/facing logic
+        movableActor->SetVelocityX(speed);
     }
 }
 

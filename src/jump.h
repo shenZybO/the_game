@@ -1,7 +1,6 @@
 #pragma once
 
 #include "action.h"
-#include "canJump.h"
 
 /* Jump action */
 class Jump : public Action {
@@ -11,7 +10,7 @@ class Jump : public Action {
 
     ~Jump() = default;
 
-    virtual void Perform(float delta) override;
+    void OnPerform(float delta) override;
 
    private:
     float customJumpStrength;  // optional override for move speed magnitude

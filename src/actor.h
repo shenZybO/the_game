@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include "raytmx.h"
 #include "animation2d.h"
 #include <memory>
@@ -7,8 +8,8 @@
 // Forward declare GameLevel (reference only needs this)
 class GameLevel;
 
-/* Abstract base class for all game actors - game objects which can perform actions (including game
- * characters and items) Actor needs a posiotion, size and grapical representation.
+/* Abstract base class for all game actors — game objects which can perform actions (including game
+ * characters and items). An Actor needs a position, size, and graphical representation.
  */
 class Actor {
    public:
@@ -107,7 +108,12 @@ class Actor {
 
     void SetCurrentAnimation(std::shared_ptr<Animation2D> anim) { currentAnimation = anim; }
 
-    void ResetToDefaultAnimation() { currentAnimation = defaultAnimation; }
+    GameTypes::Direction GetFacingDirection() const noexcept { return facingDirection; }
+    void SetFacingDirection(GameTypes::Direction dir) noexcept { facingDirection = dir; }
+
+    void ResetToDefaultAnimation() { 
+        currentAnimation = defaultAnimation; 
+    }
 
     const GameLevel& GetGameLevel() const { return gameLevel; }
 
@@ -123,7 +129,7 @@ class Actor {
     // Draw the actor
     virtual void Draw() {
         if (currentAnimation) {
-            currentAnimation->Draw(position);
+            currentAnimation->Draw(position, facingDirection == GameTypes::Direction::Left ? true : false);
         }
     }
 
@@ -134,4 +140,5 @@ class Actor {
     GameLevel& gameLevel;  // non-owning reference to the current game level
     bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)
     ActorState actorState = STATE_IDLE; /**< Current runtime state */
+    GameTypes::Direction facingDirection = GameTypes::Direction::Right; /**< Current facing direction */
 };

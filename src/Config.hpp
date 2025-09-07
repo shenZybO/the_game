@@ -22,4 +22,8 @@ namespace PlayerConfig {
     inline constexpr std::string_view WALK_ANIM = "../resources/player_walk.png";
     inline constexpr int WALK_ANIM_FRAMES = 2;
     inline constexpr float WALK_ANIM_FRAME_DURATION = 0.2f; // seconds per frame
+    inline constexpr bool CAN_DOUBLE_JUMP = true;  // If true, grant exactly one extra jump while airborne (total 2 jumps)
+    inline constexpr std::string_view JUMP_ANIM = "../resources/player_jump.png";
+    inline constexpr int JUMP_ANIM_FRAMES = 1;  // single frame for jump
+    inline constexpr float JUMP_ANIM_FRAME_DURATION = 0.1f; // not really used for single frame
 }

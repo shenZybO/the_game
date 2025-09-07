@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include "actor.h"
 #include "action.h"
 #include "raylib.h"
@@ -37,9 +38,7 @@ class Movable /* : public Actor */ {
   /**
    * @brief Virtual destructor.
    */
-  virtual ~Movable() {
-    movingAnimation.reset();
-  };
+  virtual ~Movable() = default;
 
   /**
    * @brief Get current velocity vector (pixels per second).
@@ -65,11 +64,6 @@ class Movable /* : public Actor */ {
    * @brief Set the horizontal move speed.
    */
   void SetMoveSpeed(float s) { moveSpeed = s; }
-
-  /**
-   * @brief Mark the actor as grounded or not.
-   */
-  void SetGrounded(bool g) { isGrounded = g; }
 
   /**
    * @brief Query whether the actor is currently grounded.

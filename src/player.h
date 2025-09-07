@@ -5,9 +5,9 @@
 #include "action.h"
 #include "keyboard_listener.h"
 #include "input_manager.h"
-#include "canJump.h"
+#include "jumpable.h"
 
-class Player : public Actor, virtual public Movable, public CanJump, public KeyboardListener {
+class Player : public Actor, virtual public Movable, public Jumpable, public KeyboardListener {
    public:
     /**
      * @brief Construct a new Player instance.
@@ -18,6 +18,7 @@ class Player : public Actor, virtual public Movable, public CanJump, public Keyb
      * @param x Initial X position.
      * @param y Initial Y position.
      * @param jumpStrength Strength of jump impulse.
+     * @param moveSpeed Horizontal move speed.
      * @param imagePath Path to the player sprite sheet.
      * @param frameCount Frames in the sprite sheet.
      * @param frameSpeed Frame duration for animation.
@@ -27,18 +28,29 @@ class Player : public Actor, virtual public Movable, public CanJump, public Keyb
            const char* imagePath, int frameCount, float frameSpeed)
         : Actor(level, imagePath, frameCount, frameSpeed, x, y),
           Movable(*this, moveSpeed),
-          CanJump(jumpStrength) {
+          Jumpable(jumpStrength) {
         InputManager::Instance().RegisterListener(this);
     }
 
-        Player(GameLevel& level, float x, float y, float jumpStrength,
+    Player(GameLevel& level, float x, float y, float jumpStrength,
            float moveSpeed,
            const char* imagePath, int frameCount, float frameSpeed,
            const char* moveImagePath, int moveFrameCount, float moveFrameSpeed)
         : Actor(level, imagePath, frameCount, frameSpeed, x, y),
           Movable(*this, moveImagePath, moveFrameCount, moveFrameSpeed, moveSpeed),
-          CanJump(jumpStrength) {
+          Jumpable(jumpStrength) {
         InputManager::Instance().RegisterListener(this);
+    }
+
+    Player(GameLevel& level, float x, float y, float jumpStrength,
+           float moveSpeed,
+           const char* imagePath, int frameCount, float frameSpeed,
+           const char* moveImagePath, int moveFrameCount, float moveFrameSpeed,
+           const char* jumpImagePath, int jumpFrameCount, float jumpFrameSpeed)
+        : Actor(level, imagePath, frameCount, frameSpeed, x, y),
+          Movable(*this, moveImagePath, moveFrameCount, moveFrameSpeed, moveSpeed),
+          Jumpable(jumpStrength, jumpImagePath, jumpFrameCount, jumpFrameSpeed) {
+            InputManager::Instance().RegisterListener(this);
     }
 
     /**
@@ -47,6 +59,11 @@ class Player : public Actor, virtual public Movable, public CanJump, public Keyb
     ~Player() { 
       InputManager::Instance().UnregisterListener(this); 
     }
+    // Non-copyable/movable: listener registration ties lifetime to this instance
+    Player(const Player&) = delete;
+    Player(Player&&) = delete;
+    Player& operator=(const Player&) = delete;
+    Player& operator=(Player&&) = delete;
 
     /**
      * @brief Update player logic each frame.

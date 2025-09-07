@@ -12,7 +12,11 @@ class Action {
     virtual ~Action() = default;
 
     // Called each update tick. Implementations perform their logic.
-    virtual void Perform(float delta) = 0;
+    virtual void Perform(float delta) final {
+        // Call the derived class implementation
+        OnPerform(delta);
+        performedOnce = true; // mark that the oneShot action has been performed
+    }
 
     Actor& GetActor() const { return actor; }
 
@@ -30,4 +34,7 @@ class Action {
     bool oneShot;   // if true, action is performed only once per registration
     bool performedOnce = false; // internal flag to track if oneShot action has been performed at least once
     float elapsed;   // seconds
+
+    // Hook for derived implementations; called by Perform().
+    virtual void OnPerform(float delta) = 0; // must be implemented by derived classes
 };
