@@ -17,6 +17,10 @@ class GameLogic {
     // Update all active actions; remove expired ones
     void Update();
 
+    void Cleanup() {
+        actions.clear();
+    }
+
    private:
     GameLogic() = default;
     ~GameLogic() = default;

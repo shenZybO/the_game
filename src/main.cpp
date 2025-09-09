@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     path exePath = canonical(argv[0]).parent_path();
 
     // Set assets relative to executable
-    AssetManager::SetAssetRoot(exePath / "../resources");
+    AssetManager::SetAssetRoot(exePath / GameConfig::RESOURCES_PATH);
 
     InitWindow(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, "THE GAME");
     SetTargetFPS(Config::TARGET_FPS);
@@ -48,6 +48,9 @@ int main(int argc, char** argv) {
         // Render the game level
         gameLevel0.Render();
     }
+
+    // Cleanup and close
+    GameLogic::Instance().Cleanup();
 
     UnloadTMX(gameLevel0.GetMap());
     CloseWindow();

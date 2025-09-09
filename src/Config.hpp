@@ -15,6 +15,7 @@ namespace GameConfig {
         std::string_view{"maps/lvl_0.tmx"},
         std::string_view{"maps/lvl_1.tmx"},
     };
+    inline constexpr std::string_view RESOURCES_PATH = "../../resources";
 }
 
 namespace MoveConfig {
