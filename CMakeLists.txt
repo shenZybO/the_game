@@ -61,17 +61,17 @@ endif()
 # -------------------------
 add_executable(the_game 
   src/main.cpp
-  src/player.cpp
-  src/move.cpp
-  src/gamelogic.cpp
-  src/input_manager.cpp
-  src/animation2d.cpp
-  src/gamelevel.cpp
-  src/movable.cpp
-  src/jumpable.cpp
-  src/jump.cpp
-  src/patrolable.cpp
-  src/enemy.cpp
+  src/Actors/player.cpp
+  src/Actions/move.cpp
+  src/Logic/gamelogic.cpp
+  src/Input/input_manager.cpp
+  src/Helpers/animation2d.cpp
+  src/Logic/gamelevel.cpp
+  src/Actors/Abilities/Movement/movable.cpp
+  src/Actors/Abilities/Movement/jumpable.cpp
+  src/Actions/jump.cpp
+  src/Actors/Abilities/Movement/patrolable.cpp
+  src/Actors/enemy.cpp
 )
 
 # Only need to link raylib + raytmx (hoxml comes automatically)
@@ -81,6 +81,18 @@ target_link_libraries(the_game PRIVATE raylib raytmx)
 if(WIN32)
   target_link_libraries(the_game PRIVATE winmm)
 endif()
+
+# Project include directories (allow including headers with e.g. "Actors/player.h")
+target_include_directories(the_game PRIVATE
+  ${CMAKE_SOURCE_DIR}/src
+  ${CMAKE_SOURCE_DIR}/src/Actors
+  ${CMAKE_SOURCE_DIR}/src/Actions
+  ${CMAKE_SOURCE_DIR}/src/Logic
+  ${CMAKE_SOURCE_DIR}/src/Input
+  ${CMAKE_SOURCE_DIR}/src/Helpers
+  ${CMAKE_SOURCE_DIR}/src/Actors/Abilities
+  ${CMAKE_SOURCE_DIR}/src/Actors/Abilities/Movement
+)
 
 # -------------------------
 # clang-format helper target
