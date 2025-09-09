@@ -11,24 +11,10 @@ else()
   set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG")
 endif()
 
-# Ensure build outputs are placed in per-config subfolders under the build directory.
-# This makes the runtime/library/archive outputs appear in build/Debug and build/Release
-# for multi-config generators, and in build/<CMAKE_BUILD_TYPE> for single-config.
-if(CMAKE_CONFIGURATION_TYPES)
-  # Multi-config generators (Visual Studio, Ninja Multi-Config, etc.)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
-else()
-  # Single-config generators (Ninja, Unix Makefiles)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-endif()
 cmake_minimum_required(VERSION 3.16...4.01)
 project(the_game)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 include(FetchContent)
 
