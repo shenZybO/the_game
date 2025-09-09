@@ -31,3 +31,9 @@ namespace PlayerConfig {
     inline constexpr GameTypes::AnimationData FALL_ANIM { "sprites/player_fall.png", 1, 0.1f }; // path, frames, seconds per frame
     inline constexpr bool CAN_DOUBLE_JUMP = true;  // If true, grant exactly one extra jump while airborne (total 2 jumps)
 }
+
+namespace EnemyConfig {
+    inline constexpr float DEFAULT_MOVE_SPEED = 80.0f;
+    inline constexpr GameTypes::AnimationData IDLE_ANIM { "sprites/zombie_idle.png", 1, 0.1f }; // path, frames, seconds per frame
+    inline constexpr GameTypes::AnimationData WALK_ANIM { "sprites/zombie_walk.png", 2, 0.2f }; // path, frames, seconds per frame
+}

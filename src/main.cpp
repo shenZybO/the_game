@@ -6,6 +6,7 @@
 #include "gamelogic.h"
 #include "gamelevel.h"
 #include "asset_manager.h"
+#include "enemy.h"
 
 int main(int argc, char** argv) {
     using namespace std::filesystem;
@@ -18,6 +19,9 @@ int main(int argc, char** argv) {
     InitWindow(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, "THE GAME");
     SetTargetFPS(Config::TARGET_FPS);
 
+    // TODO: level construction (load map, add actors, etc) will be handled 
+    // based on object layers data in the TMX map later
+
     GameLevel gameLevel0(GameConfig::LEVELS[0]);
     // Add a player actor to the game level
     Player& p = gameLevel0.addActor<Player>(100.0f /* initial x */, 100.0f /* initial y */, 
@@ -27,6 +31,11 @@ int main(int argc, char** argv) {
                                             PlayerConfig::WALK_ANIM,
                                             PlayerConfig::JUMP_ANIM,
                                             PlayerConfig::FALL_ANIM);
+
+    // Add a simple Enemy to the level (spawn above ground)
+    // Enemy will start falling and then patrol left/right when grounded.
+    Enemy& e = gameLevel0.addActor<Enemy>(450.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
+                                         EnemyConfig::IDLE_ANIM, EnemyConfig::WALK_ANIM);
 
     while (!WindowShouldClose()) {
         // Poll input and dispatch events

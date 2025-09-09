@@ -33,11 +33,16 @@ void GameLevel::UpdateAll() {
     // Get delta time for this frame
     float delta = GetFrameTime();
 
-    // Update all actors in the level
+    // Update all non-player actors in the level
     for (auto& actor : actors) {
         if (actor->IsAlive()) {
             actor->Update(delta);
         }
+    }
+
+    // Update player separately if present
+    if (player && player->IsAlive()) {
+        player->Update(delta);
     }
 
     // Cleanup dead actors and noify removal listeners
@@ -57,6 +62,14 @@ void GameLevel::UpdateAll() {
     // Erase the dead actors from the vector
     if (iterator != actors.end()) {
         actors.erase(iterator, actors.end());
+    }
+
+    // If the dedicated player became dead, notify listeners and clear the slot
+    if (player && !player->IsAlive()) {
+        for (const auto& listener : removalListeners) {
+            listener(*player);
+        }
+        player.reset();
     }
 }
 
@@ -82,11 +95,16 @@ void GameLevel::Render() {
     AnimateTMX(map);
     DrawTMX(map, &camera, 0, 0, WHITE);
 
-    // Render all actors in the level
+    // Render all non-player actors first so the player is drawn on top
     for (const auto& actor : actors) {
         if (actor->IsAlive()) {
             actor->Draw();
         }
+    }
+
+    // Render player last so it appears on top of other actors
+    if (player && player->IsAlive()) {
+        player->Draw();
     }
 
     EndMode2D();
@@ -95,14 +113,8 @@ void GameLevel::Render() {
 }
 
 Player* GameLevel::GetPlayer() const {
-    // Find and return the Player actor in the level
-    for (const auto& actor : actors) {
-        Player* player = dynamic_cast<Player*>(actor.get());
-        if (player != nullptr) {
-            return player;
-        }
-    }
-    return nullptr;  // No Player found
+    // Return the dedicated player instance if present
+    return player.get();
 }
 
 TmxLayer* GameLevel::GetGroundLayer() const {

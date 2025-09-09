@@ -122,3 +122,22 @@ void Movable::Update(float delta) {
     }
 
 }
+
+// Helper to access ground tile at world coordinates; uses cached ground layer when available
+bool Movable::HasGroundTileAt(float worldX, float worldY) const {
+    TmxMap* map = self.GetGameLevel().GetMap();
+    TmxLayer const* ground = self.GetGameLevel().GetCachedGroundLayer();
+    if (map == nullptr || ground == nullptr) return false;
+
+    // Convert world coords to tile coords
+    int tileX = static_cast<int>(worldX) / map->tileWidth;
+    int tileY = static_cast<int>(worldY) / map->tileHeight;
+
+    if (tileX < 0 || tileX >= (int)map->width || tileY < 0 || tileY >= (int)map->height) return false;
+
+    // compute index into tile array
+    uint32_t idx = tileY * ground->exact.tileLayer.width + tileX;
+    if (idx >= ground->exact.tileLayer.tilesLength) return false;
+    
+    return ground->exact.tileLayer.tiles[idx] != 0;
+}

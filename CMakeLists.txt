@@ -70,6 +70,8 @@ add_executable(the_game
   src/movable.cpp
   src/jumpable.cpp
   src/jump.cpp
+  src/patrolable.cpp
+  src/enemy.cpp
 )
 
 # Only need to link raylib + raytmx (hoxml comes automatically)

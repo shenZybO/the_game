@@ -71,14 +71,9 @@ class GameLevel {
 
         // If adding a Player, ensure there's at most one Player in the level.
         if constexpr (std::is_base_of<Player, T>::value) {
-            // Find existing Player and replace it
-            for (size_t i = 0; i < actors.size(); ++i) {
-                if (dynamic_cast<Player*>(actors[i].get()) != nullptr) {
-                    // replace existing Player with the new one
-                    actors[i] = std::move(actor);
-                    return static_cast<T&>(*actors[i]);
-                }
-            }
+            // Store the new Player in the dedicated player slot.
+            player = std::move(actor);
+            return static_cast<T&>(*player);
         }
 
         // Default: append to actor list
@@ -92,6 +87,8 @@ class GameLevel {
     TmxLayer* groundLayer = nullptr;
     // container of actors belonging to this level
     std::vector<std::unique_ptr<Actor>> actors;
+    // Dedicated slot for the Player actor (separate from other actors so it can be drawn on top)
+    std::unique_ptr<Player> player;
     // listeners called when an actor is removed
     std::vector<std::function<void(const Actor&)>> removalListeners;
     // camera object for rendering

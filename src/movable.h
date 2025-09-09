@@ -107,6 +107,9 @@ class Movable /* : public Actor */ {
     Action* activeMoveAction = nullptr; /**< Currently active Move action, if any. */
     Actor& self; // non owning actor reference
 
+    // Helper: return true when tile exists under the tile at the given world coordinates
+    bool HasGroundTileAt(float worldX, float worldY) const;
+
   private:
     Vector2 prevPosition;
     float moveSpeed;
