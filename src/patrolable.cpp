@@ -32,7 +32,7 @@ void Patrolable::Update(float delta) {
     float aheadX = (patrolDir == GameTypes::Direction::Left) ? (self.GetPosition().x - 1.0f) : (self.GetPosition().x + rect.width + 1.0f);
 
     // check if tile under the ahead position exists; if not, stop and wait
-    if (!HasGroundTileAt(aheadX + (patrolDir == GameTypes::Direction::Left ? 0.0f : 0.0f), footY)) {
+    if (!HasGroundTileAt(aheadX, footY)) {
         // reached edge: stop and schedule wait
         state = PatrolState::Waiting;
         waitTimer = 0.6f; // pause before turning
@@ -47,7 +47,7 @@ void Patrolable::Update(float delta) {
     if (state == PatrolState::Moving) {
             // Register move action for new direction
             if (!activeMoveAction) {
-                auto act = std::make_unique<Move>(self, (patrolDir == GameTypes::Direction::Left) ? GameTypes::Direction::Left : GameTypes::Direction::Right, GetMoveSpeed());
+                auto act = std::make_unique<Move>(self, patrolDir);
                 Action* raw = act.get();
                 GameLogic::Instance().RegisterAction(std::move(act));
                 activeMoveAction = raw;

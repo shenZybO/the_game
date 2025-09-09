@@ -11,7 +11,6 @@
  */
 class Enemy : public Actor, virtual public Movable, public Patrolable {
   public:
-    enum class PatrolState { FallingToGround, Moving, Waiting };
 
     Enemy(GameLevel& level, float x, float y,
            float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData patrolAnim)

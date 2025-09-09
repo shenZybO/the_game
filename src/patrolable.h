@@ -10,11 +10,8 @@ class Patrolable : virtual public Movable {
         enum class PatrolState { FallingToGround, Moving, Waiting };
         
         Patrolable() 
-            : rng(std::random_device{}()),
-              state(PatrolState::FallingToGround),
-              patrolDir(GameTypes::Direction::Right),
-              waitTimer(0.0f), 
-            Movable(*this) {}
+            : Movable(*this),
+            rng(std::random_device{}()) {}
 
         ~Patrolable() override = default;
         
@@ -25,6 +22,6 @@ class Patrolable : virtual public Movable {
     private:
         PatrolState state = PatrolState::FallingToGround;
         float waitTimer = 0.0f;
-        std::mt19937 rng;
+        std::mt19937 rng{std::random_device{}()};
         GameTypes::Direction patrolDir = GameTypes::Direction::Right;
 };

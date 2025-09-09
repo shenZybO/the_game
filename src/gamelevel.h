@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include <string_view>
+#include <type_traits>
 #include "raytmx.h"
 #include "actor.h"
 #include "Config.hpp"
@@ -70,10 +71,10 @@ class GameLevel {
         T& ref = *actor;  // reference to created actor
 
         // If adding a Player, ensure there's at most one Player in the level.
-        if constexpr (std::is_base_of<Player, T>::value) {
+        if constexpr (std::is_base_of_v<Player, T>) {
             // Store the new Player in the dedicated player slot.
             player = std::move(actor);
-            return static_cast<T&>(*player);
+            return ref;
         }
 
         // Default: append to actor list
