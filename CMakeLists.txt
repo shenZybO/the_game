@@ -57,7 +57,7 @@ else()
     # Fallback: fetch from GitHub if submodule missing
     FetchContent_Declare(
       raytmx
-      GIT_REPOSITORY https://github.com/yourname/raytmx.git
+      GIT_REPOSITORY https://github.com/shenZybO/raytmx.git
       GIT_TAG main
     )
     FetchContent_GetProperties(raytmx)
