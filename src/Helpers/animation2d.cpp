@@ -1,6 +1,7 @@
 #include "types.h"
 #include "animation2d.h"
 #include "asset_manager.h"
+#include "texture_manager.h"
 
 /**
  * @brief Construct Animation2D by loading texture from asset path.
@@ -8,37 +9,28 @@
  * The constructor resolves the texture path via AssetManager and loads it.
  */
 Animation2D::Animation2D(GameTypes::AnimationData animData)
-    : texture(LoadTexture(AssetManager::GetAssetPath(animData.texturePath).string().c_str())),
-      frameCount(animData.frameCount > 0 ? animData.frameCount : 1),
-      frameDuration(animData.frameDuration > 0.0f ? animData.frameDuration : 0.1f),
-      currentFrame(0),
-      timer(0.0f),
-      ownsTexture(true) {}
+        : texture(&TextureManager::Instance().GetTexture(animData.texturePath)),
+            frameCount(animData.frameCount > 0 ? animData.frameCount : 1),
+            frameDuration(animData.frameDuration > 0.0f ? animData.frameDuration : 0.1f),
+            currentFrame(0),
+            timer(0.0f) {}
 
 /**
  * @brief Construct Animation2D from an existing Texture2D.
  *
  * When ownsTexture is true the destructor will unload the texture.
  */
-Animation2D::Animation2D(Texture2D texture, int frameCount, float frameDuration, bool ownsTexture)
-    : texture(texture),
-      frameCount(frameCount > 0 ? frameCount : 1),
-      frameDuration(frameDuration > 0.0f ? frameDuration : 0.1f),
-      currentFrame(0),
-      timer(0.0f),
-      ownsTexture(ownsTexture) {}
+Animation2D::Animation2D(Texture2D& texture, int frameCount, float frameDuration)
+        : texture(&texture),
+            frameCount(frameCount > 0 ? frameCount : 1),
+            frameDuration(frameDuration > 0.0f ? frameDuration : 0.1f),
+            currentFrame(0),
+            timer(0.0f) {}
 
 /**
  * @brief Destroy the Animation2D and free owned resources.
  */
-Animation2D::~Animation2D() {
-    if (ownsTexture) {
-        /* Debug output for texture unloading. This helps when tracking resource
-           usage during development but is a no-op for release. */
-        TraceLog(LOG_INFO, "Animation2D destructor: Unloading texture with ID %u", texture.id);
-        UnloadTexture(texture);
-    }
-}
+Animation2D::~Animation2D() { }
 
 /**
  * @brief Advance the animation timer and choose the current frame.
@@ -67,18 +59,18 @@ void Animation2D::Draw(Vector2 position, bool flipped, Color tint, float scale) 
 
     if (frameCount <= 1) {
         // static texture; use DrawTexturePro to support flipping via negative source width
-        srcRec = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
+        srcRec = {0.0f, 0.0f, (float)texture->width, (float)texture->height};
         if (flipped) {
-            srcRec.x = (float)texture.width;  // start at right edge
+            srcRec.x = (float)texture->width;  // start at right edge
             srcRec.width = -srcRec.width;     // negative width flips horizontally
         }
 
-        dstRec = {position.x, position.y, (float)texture.width * scale,
-                  (float)texture.height * scale};
+        dstRec = {position.x, position.y, (float)texture->width * scale,
+                  (float)texture->height * scale};
     } else {
         // animated texture; calculate source rectangle based on current frame
-        float frameWidth = (float)texture.width / (float)frameCount;
-        float frameHeight = (float)texture.height;
+        float frameWidth = (float)texture->width / (float)frameCount;
+        float frameHeight = (float)texture->height;
 
         if (!flipped) {
             srcRec = {frameWidth * currentFrame, 0.0f, frameWidth, frameHeight};
@@ -91,5 +83,5 @@ void Animation2D::Draw(Vector2 position, bool flipped, Color tint, float scale) 
     }
 
     Vector2 origin = {0.0f, 0.0f};
-    DrawTexturePro(texture, srcRec, dstRec, origin, 0.0f, tint);
+    DrawTexturePro(*texture, srcRec, dstRec, origin, 0.0f, tint);
 }

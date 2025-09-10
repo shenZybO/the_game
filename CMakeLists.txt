@@ -85,6 +85,7 @@ add_executable(the_game
   src/Actions/jump.cpp
   src/Actors/Abilities/Movement/patrolable.cpp
   src/Actors/enemy.cpp
+  src/Helpers/texture_manager.cpp
 )
 
 # Only need to link raylib + raytmx (hoxml comes automatically)

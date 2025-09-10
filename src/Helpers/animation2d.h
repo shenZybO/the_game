@@ -24,8 +24,7 @@ class Animation2D {
      *
      * When ownsTexture is true the destructor will unload the texture.
      */
-    Animation2D(Texture2D texture, int frameCount = 1, float frameDuration = 0.1f,
-                bool ownsTexture = false);
+    Animation2D(Texture2D& texture, int frameCount = 1, float frameDuration = 0.1f);
 
     /**
      * @brief Destroy the Animation2D and free owned resources.
@@ -65,19 +64,19 @@ class Animation2D {
      * @brief Width of a single animation frame in pixels.
      */
     float GetFrameWidth() const {
-        return (frameCount > 0) ? ((float)texture.width / (float)frameCount) : (float)texture.width;
+        return (frameCount > 0) ? ((float)texture->width / (float)frameCount) : (float)texture->width;
     }
 
     /**
      * @brief Height of a single animation frame in pixels.
      */
-    float GetFrameHeight() const { return (float)texture.height; }
+    float GetFrameHeight() const { return (float)texture->height; }
 
    private:
-    Texture2D texture; /**< Underlying texture used for animation frames. */
+    Texture2D* texture; /**< Non-owning pointer to underlying texture. */
     int frameCount;    /**< Number of frames in the texture horizontally. */
     float frameDuration; /**< Duration in seconds per frame. */
     int currentFrame; /**< Index of the current frame. */
     float timer;      /**< Accumulated time used to advance frames. */
-    bool ownsTexture; /**< True when this instance owns the texture and should unload it. */
+    // no ownership; textures are managed by TextureManager
 };

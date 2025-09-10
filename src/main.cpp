@@ -7,6 +7,7 @@
 #include "gamelevel.h"
 #include "asset_manager.h"
 #include "enemy.h"
+#include "texture_manager.h"
 
 /**
  * @brief Program entry: initializes systems, creates a level and runs the main loop.
@@ -56,6 +57,7 @@ int main(int argc, char** argv) {
     GameLogic::Instance().Cleanup();
 
     UnloadTMX(gameLevel0.GetMap());
+    TextureManager::Instance().UnloadAll();
     CloseWindow();
     return 0;
 }
