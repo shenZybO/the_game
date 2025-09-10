@@ -30,75 +30,11 @@ void Movable::MoveBy(float dx, float dy) {
 }
 
 /**
- * @brief Perform swept ground collision and snap actor to the ground when appropriate.
- *
- * Uses the cached ground layer (if available) and performs a swept test downwards
- * to determine the nearest collision top. Snaps the actor on top and clears vertical
- * velocity when a ground collision within tolerance is found.
- */
-bool Movable::CheckAndFixGroundCollision(float delta) {
-    const GameLevel& gameLevel = self.GetGameLevel();
-
-    TmxLayer const* ground = gameLevel.GetCachedGroundLayer();
-    TmxMap* map = gameLevel.GetMap();
-
-    // No layer or map to check against
-    if (ground == nullptr || map == nullptr) {
-        return false;
-    }
-
-    // Compute vertical displacement for this frame
-    float verticalDisplacement = velocity.y * delta;
-
-    // Swept collision only makes sense when moving downwards or standing (if standing, we still
-    // want to snap to ground, otherwise we fall through)
-    if (verticalDisplacement >= 0.0f) {
-        uint32_t hitCount = 0;
-        // Build a swept rectangle that covers from current rect down to the expected rect
-        Rectangle swept = self.GetRect();
-        swept.height += verticalDisplacement;  // extend downwards to include the travel path
-
-        TmxObject* collisionObjects =
-            CheckCollisionTMXTileLayersRecAllAlloc(map, ground, 1, swept, &hitCount);
-
-        if (hitCount == 0 || collisionObjects == NULL) {
-            if (collisionObjects != NULL) MemFree(collisionObjects);
-            return false;
-        }
-
-        // Only snap if collision top lies between previous bottom and new bottom (within tolerance)
-        float bottomBefore = self.GetPosition().y + self.GetRect().height;
-        float bottomAfter = bottomBefore + verticalDisplacement;
-        float bestCollisionTop = collisionObjects[0].y;  // take the first hit for now;
-        bool snap = false;
-
-        for (uint32_t i = 0; i < hitCount; i++) {
-            float collisionTop = collisionObjects[i].y;
-            if (collisionTop >= (bottomBefore - MoveConfig::VERTICAL_SNAP_TOLERANCE) &&
-                collisionTop <= (bottomAfter + MoveConfig::VERTICAL_SNAP_TOLERANCE)) {
-                snap = true;
-                if (collisionTop > bestCollisionTop) bestCollisionTop = collisionTop;
-            }
-        }
-
-        MemFree(collisionObjects);
-
-        if (!snap) return false;
-        // snap to top of collision and stop vertical motion
-        self.GetPosition().y = bestCollisionTop - self.GetRect().height + 1;
-        velocity.y = 0.0f;
-        return true;
-    }
-
-    return false;
-}
-
-/**
  * @brief Update movable physics each frame: ground checks, gravity and animation selection.
  */
 void Movable::Update(float delta) {
-
-    isGrounded = CheckAndFixGroundCollision(delta);
+    // Update grounded state via foot sensor hysteresis after physics integration
+    UpdateGroundedState(delta);
 
     // apply general gravity if not grounded (falling possible even for Actor not able to jump)
     if (!isGrounded || self.GetState() == Actor::STATE_JUMPING) {
@@ -151,11 +87,80 @@ bool Movable::HasGroundTileAt(float worldX, float worldY) const {
     int tileX = static_cast<int>(worldX) / map->tileWidth;
     int tileY = static_cast<int>(worldY) / map->tileHeight;
 
-    if (tileX < 0 || tileX >= (int)map->width || tileY < 0 || tileY >= (int)map->height) return false;
+    if (tileX < 0 || tileX >= (int)map->width || tileY < 0 || tileY >= (int)map->height) {
+        return false;
+    }
 
     // compute index into tile array
     uint32_t idx = tileY * ground->exact.tileLayer.width + tileX;
-    if (idx >= ground->exact.tileLayer.tilesLength) return false;
+    if (idx >= ground->exact.tileLayer.tilesLength) {
+        return false;
+    }
     
     return ground->exact.tileLayer.tiles[idx] != 0;
+
+}
+
+/**
+ * @brief Update grounded flag using a narrow foot sensor and grace period.
+ */
+void Movable::UpdateGroundedState(float delta) {
+    bool groundedNow = false;
+    TmxMap* map = self.GetGameLevel().GetMap();
+    const TmxLayer* ground = self.GetGameLevel().GetCachedGroundLayer();
+
+    if (map != nullptr && ground != nullptr) {
+        Rectangle body = self.GetRect();
+
+        // calculate sensor dimensions and create rectangle
+        float sensorWidth = body.width * MoveConfig::FOOT_SENSOR_WIDTH_RATIO;
+        
+        // Clamp sensor width to reasonable range
+        sensorWidth = std::max(body.width * MoveConfig::FOOT_SENSOR_MIN_WIDTH_RATIO, std::min(sensorWidth, body.width));
+
+        Rectangle sensor { body.x + ((body.width - sensorWidth) * 0.5f),
+                           body.y + body.height + MoveConfig::FOOT_SENSOR_GAP,
+                           sensorWidth,
+                           MoveConfig::FOOT_SENSOR_HEIGHT };
+
+        uint32_t hitCount = 0;
+        TmxObject* collisionObjects =
+            CheckCollisionTMXTileLayersRecAllAlloc(map, ground, 1, sensor, &hitCount);
+
+        // in case of no hits nothing to do, make sure to free memory
+        if (hitCount == 0 || collisionObjects == NULL) {
+            if (collisionObjects != NULL) {
+                MemFree(collisionObjects);
+            }
+        } else {
+            groundedNow = true;
+            // go through all hits and find the highest top
+            float highestCollisionTop = collisionObjects[0].y;  // take the first hit to start with
+            for (uint32_t i = 1; i < hitCount; i++) {
+                if (collisionObjects[i].y < highestCollisionTop) {
+                    highestCollisionTop = collisionObjects[i].y;
+                }
+            }
+
+            // we don't need the collision objects anymore
+            MemFree(collisionObjects);
+
+            // If grounded and moving downward (or resting), snap actor to stand on the highest ground tile
+            if (velocity.y >= 0.0f) {
+                self.GetPosition().y = highestCollisionTop - body.height + 1;
+                velocity.y = 0.0f;
+            }
+        }
+    }
+
+    // delay setting of isGrounded = false to avoid flicker when walking off edges
+    if (groundedNow) {
+        isGrounded = true;
+        timeSinceLastGround = 0.0f;
+    } else {
+        timeSinceLastGround += delta;
+        if (timeSinceLastGround > MoveConfig::GROUND_GRACE_TIME) {
+            isGrounded = false;
+        }
+    }
 }

@@ -7,7 +7,7 @@
 #include <type_traits>
 #include "raytmx.h"
 #include "actor.h"
-#include "Config.hpp"
+#include "config.hpp"
 #include "player.h"
 
 /**

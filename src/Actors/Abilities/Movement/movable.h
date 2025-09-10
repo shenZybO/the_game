@@ -121,7 +121,8 @@ class Movable /* : public Actor */ {
     float moveSpeed;
     std::shared_ptr<Animation2D> movingAnimation; /**< Optional moving animation; falls back to defaultAnimation */
     std::shared_ptr<Animation2D> fallingAnimation; /**< Optional falling animation; falls back to defaultAnimation */
-    // Check if this movable is on the ground and correct position if needed
-    bool CheckAndFixGroundCollision(float delta);
+    // Update grounded state using a narrow foot sensor and grace time
+    void UpdateGroundedState(float delta);
+    float timeSinceLastGround = 0.0f;
 
 };

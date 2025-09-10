@@ -99,7 +99,5 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
     void OnKeyReleased(int key) override;
 
   private:
-    void PlayerInit() {
-        InputManager::Instance().RegisterListener(this);
-    }
+    void PlayerInit();
 };

@@ -18,7 +18,7 @@ class Enemy : public Actor, virtual public Movable, public Patrolable {
            float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData patrolAnim)
         : Actor(level, idleAnim, x, y),
           Movable(*this, patrolAnim, moveSpeed),
-          Patrolable() {}
+          Patrolable() { EnemyInit(); }
 
     /**
      * @brief Update enemy each frame: animations, physics and patrol logic.
@@ -33,4 +33,5 @@ class Enemy : public Actor, virtual public Movable, public Patrolable {
     void Draw() override;
 
   private:
+  void EnemyInit();
 };

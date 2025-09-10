@@ -13,5 +13,7 @@ namespace GameTypes {
         std::string_view texturePath;
         int frameCount;
         float frameDuration;
+        float offsetX = 0.0f; /**< Optional screen-space draw offset X (pixels); +X moves right. */
+        float offsetY = 0.0f; /**< Optional screen-space draw offset Y (pixels); +Y moves down. */    
     };
 }

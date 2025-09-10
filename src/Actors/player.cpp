@@ -67,3 +67,15 @@ void Player::OnKeyReleased(int key) {
         }
     }
 }
+
+    void Player::PlayerInit() {
+      InputManager::Instance().RegisterListener(this);
+      /*
+      * Configure a fixed physics collider so animation frame size changes do not
+      * affect collision and ground detection.
+      */
+      SetCollider(PlayerConfig::COLLIDER_OFFSET_X,
+            PlayerConfig::COLLIDER_OFFSET_Y,
+            PlayerConfig::COLLIDER_WIDTH,
+            PlayerConfig::COLLIDER_HEIGHT);
+    }

@@ -1,6 +1,6 @@
 #include "gamelevel.h"
 #include <algorithm>
-#include "Config.hpp"
+#include "config.hpp"
 #include "asset_manager.h"
 
 /**

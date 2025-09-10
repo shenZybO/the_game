@@ -1,7 +1,7 @@
 #include "raylib.h"
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
-#include "Config.hpp"
+#include "config.hpp"
 #include "player.h"
 #include "gamelogic.h"
 #include "gamelevel.h"
@@ -38,8 +38,12 @@ int main(int argc, char** argv) {
 
     // Add a simple Enemy to the level (spawn above ground)
     // Enemy will start falling and then patrol left/right when grounded.
-    Enemy& e = gameLevel0.addActor<Enemy>(450.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
+    gameLevel0.addActor<Enemy>(450.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
                                          EnemyConfig::IDLE_ANIM, EnemyConfig::WALK_ANIM);
+
+    // add another enemy to test shared texture via TextureManager
+    gameLevel0.addActor<Enemy>(750.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
+                                          EnemyConfig::IDLE_ANIM, EnemyConfig::WALK_ANIM);
 
     while (!WindowShouldClose()) {
         // Poll input and dispatch events

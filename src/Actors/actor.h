@@ -94,12 +94,30 @@ class Actor {
      * Returns a default small rectangle when no animation is available.
      */
     Rectangle GetRect() const {
+        /*
+         * Prefer a fixed physics collider when configured; this decouples physics
+         * from per-frame sprite sizes and prevents flicker when animations differ
+         * in width/height.
+         */
+        if (colliderSize.x > 0.0f && colliderSize.y > 0.0f) {
+            return {position.x + colliderOffset.x, position.y + colliderOffset.y,
+                    colliderSize.x, colliderSize.y};
+        }
+
         if (currentAnimation) {
             float frameWidth = currentAnimation->GetFrameWidth();
             float frameHeight = currentAnimation->GetFrameHeight();
             return {position.x, position.y, frameWidth, frameHeight};
         }
         return {position.x, position.y, 10.0f, 10.0f};  // Default rectangle if no animation
+    }
+
+    /**
+     * @brief Configure a fixed collider box relative to the actor origin.
+     */
+    void SetCollider(float offsetX, float offsetY, float width, float height) {
+        colliderOffset = {offsetX, offsetY};
+        colliderSize = {width, height};
     }
 
     /**
@@ -138,6 +156,9 @@ class Actor {
 
    protected:
     Vector2 position;
+    // Fixed physics collider (optional). When width/height > 0, used for all physics queries.
+    Vector2 colliderOffset{0.0f, 0.0f};
+    Vector2 colliderSize{0.0f, 0.0f};
     std::shared_ptr<Animation2D> defaultAnimation;  // default animation (when in default or idle state)
     std::shared_ptr<Animation2D> currentAnimation;  // current animation to be drawn
     GameLevel& gameLevel;  // non-owning reference to the current game level

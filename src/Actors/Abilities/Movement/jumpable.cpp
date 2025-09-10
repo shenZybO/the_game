@@ -1,5 +1,5 @@
 #include "jumpable.h"
-#include "Config.hpp"
+#include "config.hpp"
 
 void Jumpable::DoJump(float jumpStrength) {
     velocity.y = -jumpStrength;

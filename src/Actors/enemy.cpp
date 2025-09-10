@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "config.hpp"
 
 /**
  * @brief Update the enemy each frame.
@@ -24,4 +25,14 @@ void Enemy::Draw() {
     /* Use Actor::Draw which handles animation drawing and flipping based on
        facing direction. No additional drawing layers are needed here. */
     Actor::Draw();
+}
+
+void Enemy::EnemyInit() {
+    /*
+     * Configure a fixed physics collider for enemies.
+     */
+    SetCollider(EnemyConfig::COLLIDER_OFFSET_X,
+          EnemyConfig::COLLIDER_OFFSET_Y,
+          EnemyConfig::COLLIDER_WIDTH,
+          EnemyConfig::COLLIDER_HEIGHT);
 }
