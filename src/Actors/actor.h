@@ -8,8 +8,12 @@
 // Forward declare GameLevel (reference only needs this)
 class GameLevel;
 
-/* Abstract base class for all game actors — game objects which can perform actions (including game
- * characters and items). An Actor needs a position, size, and graphical representation.
+/**
+ * @brief Abstract base class for all game actors.
+ *
+ * Actors are game objects that have a position, an optional graphical representation
+ * (animations) and can perform actions. This class provides basic state, position
+ * and animation management used by concrete actors (players, enemies, items).
  */
 class Actor {
    public:

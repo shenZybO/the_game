@@ -10,6 +10,11 @@
 #include "Config.hpp"
 #include "player.h"
 
+/**
+ * @brief Represents a loaded game level, including its map and actors.
+ *
+ * Loads a TMX map and manages actors, rendering and per-frame updates for the level.
+ */
 class GameLevel {
    public:
     /**

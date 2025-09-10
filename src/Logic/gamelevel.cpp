@@ -3,6 +3,11 @@
 #include "Config.hpp"
 #include "asset_manager.h"
 
+/**
+ * @brief Construct and initialize a GameLevel from a TMX map file.
+ *
+ * Loads the map and caches commonly used layers such as the ground layer.
+ */
 GameLevel::GameLevel(std::string_view mapFileName) {
     // Load the TMX map from the specified file
     map = LoadTMX(AssetManager::GetAssetPath(mapFileName).string().c_str());
@@ -29,6 +34,9 @@ GameLevel::GameLevel(std::string_view mapFileName) {
     camera.rotation = 0.0f;
 }
 
+/**
+ * @brief Update all actors in the level and perform cleanup of dead actors.
+ */
 void GameLevel::UpdateAll() {
     // Get delta time for this frame
     float delta = GetFrameTime();
@@ -74,7 +82,7 @@ void GameLevel::UpdateAll() {
 }
 
 /**
- * Render the level and all actors
+ * @brief Render the TMX map and all actors using the level camera.
  */
 void GameLevel::Render() {
     // Camera follows player, but clamp to map edges
@@ -117,6 +125,9 @@ Player* GameLevel::GetPlayer() const {
     return player.get();
 }
 
+/**
+ * @brief Find and return the tile layer named "ground".
+ */
 TmxLayer* GameLevel::GetGroundLayer() const {
     TmxLayer* result = nullptr;
     if (map == nullptr) {

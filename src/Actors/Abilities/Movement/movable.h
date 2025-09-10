@@ -5,7 +5,13 @@
 #include "action.h"
 #include "raylib.h"
 
-/* Abstract base for actors that can move. */
+/**
+ * @brief Ability mixin adding movement and basic physics to an Actor.
+ *
+ * Movable provides velocity, gravity handling, ground-snapping and optional
+ * animations for moving/falling. It is designed as a mixin and holds a
+ * non-owning reference to the `Actor` it augments.
+ */
 class Movable /* : public Actor */ {
    public:
     /**

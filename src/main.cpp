@@ -8,6 +8,9 @@
 #include "asset_manager.h"
 #include "enemy.h"
 
+/**
+ * @brief Program entry: initializes systems, creates a level and runs the main loop.
+ */
 int main(int argc, char** argv) {
     using namespace std::filesystem;
     // Find executable path

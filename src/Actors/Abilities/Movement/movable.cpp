@@ -2,6 +2,12 @@
 #include "gamelevel.h"
 #include "raytmx.h"
 
+/**
+ * @brief Move the owning actor by the specified delta and clamp to map bounds.
+ *
+ * @param dx Horizontal world delta.
+ * @param dy Vertical world delta.
+ */
 void Movable::MoveBy(float dx, float dy) {
     TmxMap* map = self.GetGameLevel().GetMap();
 
@@ -23,7 +29,13 @@ void Movable::MoveBy(float dx, float dy) {
     }
 }
 
-// Helper: check collision with given ground layer and, if colliding, snap the actor to stand on it
+/**
+ * @brief Perform swept ground collision and snap actor to the ground when appropriate.
+ *
+ * Uses the cached ground layer (if available) and performs a swept test downwards
+ * to determine the nearest collision top. Snaps the actor on top and clears vertical
+ * velocity when a ground collision within tolerance is found.
+ */
 bool Movable::CheckAndFixGroundCollision(float delta) {
     const GameLevel& gameLevel = self.GetGameLevel();
 
@@ -81,7 +93,9 @@ bool Movable::CheckAndFixGroundCollision(float delta) {
     return false;
 }
 
-// Keep move animation updated, then update grounded state and apply gravity
+/**
+ * @brief Update movable physics each frame: ground checks, gravity and animation selection.
+ */
 void Movable::Update(float delta) {
 
     isGrounded = CheckAndFixGroundCollision(delta);
@@ -123,7 +137,11 @@ void Movable::Update(float delta) {
 
 }
 
-// Helper to access ground tile at world coordinates; uses cached ground layer when available
+/**
+ * @brief Query whether the ground layer contains a tile at given world coordinates.
+ *
+ * Returns false when map or ground layer is not available.
+ */
 bool Movable::HasGroundTileAt(float worldX, float worldY) const {
     TmxMap* map = self.GetGameLevel().GetMap();
     TmxLayer const* ground = self.GetGameLevel().GetCachedGroundLayer();

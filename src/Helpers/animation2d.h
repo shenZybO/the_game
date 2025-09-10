@@ -3,13 +3,19 @@
 #include <string_view>
 #include "raylib.h"
 
+/**
+ * @brief Simple 2D animation helper managing frames and drawing.
+ *
+ * Loads a texture and provides frame timing, update and draw helpers. The
+ * class may own the underlying `Texture2D` (and will unload it on destruction)
+ * depending on the constructor used.
+ */
 class Animation2D {
    public:
     /**
      * @brief Construct an Animation2D and load a texture from file.
      *
      * The Animation2D instance takes ownership of the loaded texture.
-     *
      */
     Animation2D(GameTypes::AnimationData animData);
 
@@ -17,11 +23,6 @@ class Animation2D {
      * @brief Construct using an existing Texture2D.
      *
      * When ownsTexture is true the destructor will unload the texture.
-     *
-     * @param texture Existing texture to use for frames.
-     * @param frameCount Number of frames in texture.
-     * @param frameDuration Seconds per frame.
-     * @param ownsTexture If true, this object will unload texture on destruction.
      */
     Animation2D(Texture2D texture, int frameCount = 1, float frameDuration = 0.1f,
                 bool ownsTexture = false);
@@ -42,6 +43,7 @@ class Animation2D {
      * @brief Draw the current animation frame at the given position.
      *
      * @param position World position to draw the sprite.
+     * @param flipped If true the sprite will be flipped horizontally.
      * @param tint Color tint to apply to the sprite.
      * @param scale Uniform scale factor for drawing.
      */

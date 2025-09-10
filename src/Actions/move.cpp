@@ -1,6 +1,12 @@
 #include "move.h"
 #include "movable.h"
 
+/**
+ * @brief Apply horizontal movement each frame for Move action.
+ *
+ * This dynamically checks that the target supports `Movable` and then moves
+ * it by a delta computed from configured speed and the frame delta.
+ */
 void Move::OnPerform(float delta) {
     // Ensure target is a Movable
     Movable* movableActor = dynamic_cast<Movable*>(&actor);
@@ -27,6 +33,9 @@ void Move::OnPerform(float delta) {
     }
 }
 
+/**
+ * @brief Destructor ensures velocity is reset when action is destroyed.
+ */
 Move::~Move() {
     Movable& movableActor = dynamic_cast<Movable&>(actor);
     movableActor.SetVelocityX(0.0f);

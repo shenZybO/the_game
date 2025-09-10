@@ -3,6 +3,12 @@
 #include "move.h"
 
 
+/**
+ * @brief Per-frame update for simple patrol AI.
+ *
+ * Handles falling-to-ground, waiting at edges and registering Move actions
+ * when moving between edges.
+ */
 void Patrolable::Update(float delta) {
 
     // If still falling until ground contact, check grounded flag set by Movable::Update

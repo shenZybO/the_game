@@ -5,6 +5,13 @@
 #include <random>
 #include <memory>
 
+/**
+ * @brief Mixin for simple patrol behaviour.
+ *
+ * Patrolable allows an actor to fall until it lands, then patrol left/right
+ * between edges. It uses the Movable ability for movement and checks ground
+ * tiles to determine edges. The class expects `self` to be a Movable/Actor.
+ */
 class Patrolable : virtual public Movable {
     public:
         enum class PatrolState { FallingToGround, Moving, Waiting };
@@ -15,6 +22,11 @@ class Patrolable : virtual public Movable {
 
         ~Patrolable() override = default;
         
+        /**
+         * @brief Update patrol state and schedule/cleanup movement actions.
+         *
+         * @param delta Time in seconds since last frame.
+         */
         void Update(float delta);
 
     protected:

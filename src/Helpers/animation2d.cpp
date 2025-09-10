@@ -2,6 +2,11 @@
 #include "animation2d.h"
 #include "asset_manager.h"
 
+/**
+ * @brief Construct Animation2D by loading texture from asset path.
+ *
+ * The constructor resolves the texture path via AssetManager and loads it.
+ */
 Animation2D::Animation2D(GameTypes::AnimationData animData)
     : texture(LoadTexture(AssetManager::GetAssetPath(animData.texturePath).string().c_str())),
       frameCount(animData.frameCount > 0 ? animData.frameCount : 1),
@@ -10,6 +15,11 @@ Animation2D::Animation2D(GameTypes::AnimationData animData)
       timer(0.0f),
       ownsTexture(true) {}
 
+/**
+ * @brief Construct Animation2D from an existing Texture2D.
+ *
+ * When ownsTexture is true the destructor will unload the texture.
+ */
 Animation2D::Animation2D(Texture2D texture, int frameCount, float frameDuration, bool ownsTexture)
     : texture(texture),
       frameCount(frameCount > 0 ? frameCount : 1),
@@ -18,14 +28,23 @@ Animation2D::Animation2D(Texture2D texture, int frameCount, float frameDuration,
       timer(0.0f),
       ownsTexture(ownsTexture) {}
 
+/**
+ * @brief Destroy the Animation2D and free owned resources.
+ */
 Animation2D::~Animation2D() {
     if (ownsTexture) {
-        // debug output
+        /* Debug output for texture unloading. This helps when tracking resource
+           usage during development but is a no-op for release. */
         TraceLog(LOG_INFO, "Animation2D destructor: Unloading texture with ID %u", texture.id);
         UnloadTexture(texture);
     }
 }
 
+/**
+ * @brief Advance the animation timer and choose the current frame.
+ *
+ * Handles large deltas by advancing multiple frames when necessary.
+ */
 void Animation2D::Update(float delta) {
     if (frameCount > 1)  // only update if there are multiple frames
     {
@@ -39,6 +58,9 @@ void Animation2D::Update(float delta) {
     return;
 }
 
+/**
+ * @brief Draw the current frame using raylib's DrawTexturePro.
+ */
 void Animation2D::Draw(Vector2 position, bool flipped, Color tint, float scale) const {
     Rectangle srcRec{};
     Rectangle dstRec{};

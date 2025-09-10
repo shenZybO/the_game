@@ -7,6 +7,13 @@
 #include "input_manager.h"
 #include "jumpable.h"
 
+/**
+ * @brief Player actor representing the user-controlled character.
+ *
+ * The Player composes movement, jumping and input-listening behaviors. It registers
+ * itself with the `InputManager` to receive keyboard events and updates animation
+ * and physics state each frame.
+ */
 class Player : public Actor, virtual public Movable, public Jumpable, public KeyboardListener {
    public:
     /**

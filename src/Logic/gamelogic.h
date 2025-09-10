@@ -4,6 +4,11 @@
 #include <vector>
 #include <memory>
 
+/**
+ * @brief Simple global action manager.
+ *
+ * Owns and updates `Action` instances, removing them when they expire.
+ */
 class GameLogic {
    public:
     static GameLogic& Instance();
