@@ -16,6 +16,11 @@ namespace GameConfig {
         std::string_view{"maps/lvl_1.tmx"},
     };
     inline constexpr std::string_view RESOURCES_PATH = "../../resources";
+    // Names used inside TMX maps for spawning
+    inline constexpr std::string_view GROUND_LAYER_NAME = "ground";
+    inline constexpr std::string_view ACTORS_LAYER_NAME = "actors";
+    inline constexpr std::string_view PLAYER_OBJECT_NAME = "Player";
+    inline constexpr std::string_view ZOMBIE_OBJECT_NAME = "Zombie";
 }
 
 namespace MoveConfig {
@@ -27,6 +32,8 @@ namespace MoveConfig {
     inline constexpr float FOOT_SENSOR_GAP = 1.0f;           // small gap below collider
     inline constexpr float GROUND_GRACE_TIME = 0.08f;        // seconds; prevents rapid ground toggle
     inline constexpr float FOOT_SENSOR_MIN_WIDTH_RATIO = 0.2f; // minimum width ratio to avoid too narrow sensor
+    // If actor falls below map bottom by this many pixels, it dies
+    inline constexpr float DEATH_FALL_MARGIN = 128.0f;
 }
 
 namespace PlayerConfig {
@@ -38,6 +45,7 @@ namespace PlayerConfig {
     inline constexpr GameTypes::AnimationData JUMP_ANIM { "sprites/player_jump.png", 1, 0.1f, 3.0f, 0.0f };
     inline constexpr GameTypes::AnimationData FALL_ANIM { "sprites/player_fall.png", 1, 0.1f, 5.0f, 0.0f };
     inline constexpr bool CAN_DOUBLE_JUMP = true;  // If true, grant exactly one extra jump while airborne (total 2 jumps)
+    inline constexpr float DEATH_FADE_DURATION = 0.8f; // seconds
 
     // Default physics collider (tune as needed to fit art); values in pixels
     inline constexpr float COLLIDER_WIDTH = 48.0f;

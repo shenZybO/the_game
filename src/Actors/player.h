@@ -98,6 +98,17 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      */
     void OnKeyReleased(int key) override;
 
+    /**
+     * @brief Override to start a dying sequence (fade out) and reset the level.
+    */
+    void Destroy() override;
+
+    /**
+    * @brief Reset player state to initial conditions (alive, idle, no death timer).
+    */
+    void ResetState();
+
   private:
     void PlayerInit();
+    float deathTimer = 0.0f;
 };

@@ -13,7 +13,16 @@
  * @brief Draw the player using Actor drawing logic.
  */
 void Player::Draw() {
-    Actor::Draw();
+    // Apply fade-out when dying
+    if (actorState == Actor::STATE_DYING) {
+        float alpha = 1.0f - std::min(deathTimer / PlayerConfig::DEATH_FADE_DURATION, 1.0f);
+        Color tint = {255, 255, 255, static_cast<unsigned char>(alpha * 255)};
+        if (const Animation2D* anim = GetCurrentAnimation()) {
+            anim->Draw(GetPosition(), GetFacingDirection() == GameTypes::Direction::Left, tint, 1.0f);
+        }
+    } else {
+        Actor::Draw();
+    }
 }
 
 /**
@@ -28,6 +37,18 @@ void Player::Update(float delta) {
     Jumpable::Update(delta);
     // Then apply physics/movement integration
     Movable::Update(delta);
+
+    // Handle dying fade and level reset
+    if (actorState == Actor::STATE_DYING) {
+        deathTimer += delta;
+        if (deathTimer >= PlayerConfig::DEATH_FADE_DURATION) {
+            // Reset level after fade completes
+            gameLevel.Reset();
+            // Clear dying state for next life
+ 
+        }
+        return;
+    }
 }
 
 /**
@@ -36,6 +57,8 @@ void Player::Update(float delta) {
  * Registers Move/Jump actions in the global GameLogic when appropriate keys are pressed.
  */
 void Player::OnKeyPressed(int key) {
+    if (actorState == Actor::STATE_DYING) return; // ignore input when dying
+
     if ((key == KEY_LEFT || key == KEY_RIGHT)) {
         GameTypes::Direction dir = (key == KEY_LEFT) ? GameTypes::Direction::Left : GameTypes::Direction::Right;
         auto act = std::make_unique<Move>(*this, dir);
@@ -52,6 +75,21 @@ void Player::OnKeyPressed(int key) {
     if (key == KEY_SPACE && CanJump()) {
         auto act = std::make_unique<Jump>(*this);
         GameLogic::Instance().RegisterAction(std::move(act));
+    }
+}
+
+void Player::Destroy() {
+    if (actorState == Actor::STATE_DYING) {
+        // dying already, ignore further calls
+        return;
+    }
+    alive = false; // Mark as not alive to prevent further input/updates
+    SetState(Actor::STATE_DYING);
+    deathTimer = 0.0f;
+
+    if (activeMoveAction) {
+        GameLogic::Instance().DeregisterAction(activeMoveAction);
+        activeMoveAction = nullptr;
     }
 }
 
@@ -79,3 +117,10 @@ void Player::OnKeyReleased(int key) {
             PlayerConfig::COLLIDER_WIDTH,
             PlayerConfig::COLLIDER_HEIGHT);
     }
+
+void Player::ResetState() {
+    actorState = Actor::STATE_IDLE;
+    alive = true;
+    deathTimer = 0.0f;
+}
+

@@ -11,7 +11,7 @@
 void Movable::MoveBy(float dx, float dy) {
     TmxMap* map = self.GetGameLevel().GetMap();
 
-    Vector2& position = self.GetPosition();
+    Vector2 position = self.GetPosition();
     Rectangle rect = self.GetRect();
     position.x += dx;
     position.y += dy;
@@ -27,12 +27,20 @@ void Movable::MoveBy(float dx, float dy) {
         position.y = map->height * map->tileHeight - rect.height;
         velocity.y = 0;  // reset vertical velocity when clamped to bottom
     }
+    self.SetPosition(position.x, position.y);
 }
 
 /**
  * @brief Update movable physics each frame: ground checks, gravity and animation selection.
  */
 void Movable::Update(float delta) {
+    if (!self.IsAlive())
+    {
+        // set velocity to 0
+        velocity.x = 0;
+        velocity.y = 0; 
+        return;
+    }
     // Update grounded state via foot sensor hysteresis after physics integration
     UpdateGroundedState(delta);
 
@@ -40,7 +48,7 @@ void Movable::Update(float delta) {
     if (!isGrounded || self.GetState() == Actor::STATE_JUMPING) {
         velocity.y += MoveConfig::GRAVITY_CONSTANT * delta;  // gravity constant
         // Update vertical position
-        self.GetPosition().y += velocity.y * delta; 
+        self.SetPosition(self.GetPosition().x, self.GetPosition().y + (velocity.y * delta));
     } else {
         velocity.y = 0;  // reset vertical velocity when grounded
     }
@@ -71,6 +79,10 @@ void Movable::Update(float delta) {
         self.SetCurrentAnimation(movingAnimation);
     }
 
+    // Death by falling out of the map bottom
+    if (self.GetPosition().y > self.GetGameLevel().GetMapBottom() - MoveConfig::DEATH_FALL_MARGIN) {
+        self.Destroy();
+    }
 }
 
 /**
@@ -147,7 +159,7 @@ void Movable::UpdateGroundedState(float delta) {
 
             // If grounded and moving downward (or resting), snap actor to stand on the highest ground tile
             if (velocity.y >= 0.0f) {
-                self.GetPosition().y = highestCollisionTop - body.height + 1;
+                self.SetPosition(self.GetPosition().x, highestCollisionTop - body.height + 1);
                 velocity.y = 0.0f;
             }
         }

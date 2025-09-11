@@ -42,13 +42,6 @@ class GameLevel {
     Player* GetPlayer() const;
 
     /**
-     * @brief Find and return the TMX layer named "ground" from the map.
-     *
-     * @return TmxLayer* pointer to the ground layer or nullptr when not found or map missing.
-     */
-    TmxLayer* GetGroundLayer() const;
-
-    /**
      * @brief Return the cached ground layer pointer (non-owning).
      */
     TmxLayer const* GetCachedGroundLayer() const { return groundLayer; }
@@ -87,10 +80,26 @@ class GameLevel {
         return ref;
     }
 
+    /**
+     * @brief Reset level state: keep Player but move to start; recreate other actors from TMX.
+     */
+    void Reset();
+
+    /**
+     * @brief Get the bottom edge of the map.
+     *
+     * @return float The y-coordinate of the bottom edge of the map.
+     */
+    float GetMapBottom() const;
+
    private:
+    // Helper to find layer by name
+    const TmxLayer* FindLayerByName(const char* name) const;
+    // Helper to spawn actors from the TMX actors layer
+    void SpawnActorsFromMap(bool createPlayer);
     TmxMap* map = nullptr;  // Pointer to the TMX map
     // Cached pointer to the tile layer named "ground" (non-owning)
-    TmxLayer* groundLayer = nullptr;
+    const TmxLayer* groundLayer = nullptr;
     // container of actors belonging to this level
     std::vector<std::unique_ptr<Actor>> actors;
     // Dedicated slot for the Player actor (separate from other actors so it can be drawn on top)

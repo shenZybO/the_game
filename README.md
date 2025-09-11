@@ -12,15 +12,15 @@ A small 2D platformer prototype implemented in modern C++ (C++20) as a learning 
 
 ## Requirements
    - CMake 3.16+ (project uses FetchContent)
-   - A C++17 compatible compiler (MSVC, MinGW, clang, gcc)
+   - A C++20 compatible compiler (MSVC, MinGW, clang, gcc)
    - Git
 
 ## TODOs
    - Health system for player with collecting health (including graphical representation)
-   - Implement dying o actors - level restart / game over
+   - Implement dying of actors - level restart / game over [IN PROGRESS]
    - Add way to complete a level by reaching an exit point
-   - Resolve collision between player - enemies
-   - Filling Levels with Actors based on object layers on tmx maps
+   - Resolve collision between player and enemies
+   - Fill levels with actors based on object layers in TMX maps [DONE]
    - Implement more abilities for actors: climbing ladders, throwing rocks, shooting projectiles
    - Add simple game menu
    - Add collectible objects and game score

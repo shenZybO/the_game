@@ -23,27 +23,8 @@ int main(int argc, char** argv) {
     InitWindow(Config::SCREEN_WIDTH, Config::SCREEN_HEIGHT, "THE GAME");
     SetTargetFPS(Config::TARGET_FPS);
 
-    // TODO: level construction (load map, add actors, etc) will be handled 
-    // based on object layers data in the TMX map later
-
-    GameLevel gameLevel0(GameConfig::LEVELS[0]);
-    // Add a player actor to the game level
-    Player& p = gameLevel0.addActor<Player>(100.0f /* initial x */, 100.0f /* initial y */, 
-                                            PlayerConfig::DEFAULT_JUMP_STRENGTH,
-                                            PlayerConfig::DEFAULT_MOVE_SPEED,
-                                            PlayerConfig::IDLE_ANIM,
-                                            PlayerConfig::WALK_ANIM,
-                                            PlayerConfig::JUMP_ANIM,
-                                            PlayerConfig::FALL_ANIM);
-
-    // Add a simple Enemy to the level (spawn above ground)
-    // Enemy will start falling and then patrol left/right when grounded.
-    gameLevel0.addActor<Enemy>(450.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
-                                         EnemyConfig::IDLE_ANIM, EnemyConfig::WALK_ANIM);
-
-    // add another enemy to test shared texture via TextureManager
-    gameLevel0.addActor<Enemy>(750.0f /* x */, 250.0f /* y */, EnemyConfig::DEFAULT_MOVE_SPEED,
-                                          EnemyConfig::IDLE_ANIM, EnemyConfig::WALK_ANIM);
+    // create the first level (just demo level) - will add level switching and simple menu later
+    GameLevel gameLevel0{GameConfig::LEVELS[0]};
 
     while (!WindowShouldClose()) {
         // Poll input and dispatch events

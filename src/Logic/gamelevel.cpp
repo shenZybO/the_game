@@ -1,7 +1,9 @@
-#include "gamelevel.h"
 #include <algorithm>
+#include "gamelevel.h"
+#include "gamelogic.h"
 #include "config.hpp"
 #include "asset_manager.h"
+#include "enemy.h"
 
 /**
  * @brief Construct and initialize a GameLevel from a TMX map file.
@@ -16,17 +18,11 @@ GameLevel::GameLevel(std::string_view mapFileName) {
     }
 
     // Cache the ground layer pointer to avoid repeated name lookups
-    groundLayer = nullptr;
-    if (map != nullptr) {
-        for (uint32_t i = 0; i < map->layersLength; ++i) {
-            if (map->layers[i].type == LAYER_TYPE_TILE_LAYER) {
-                if (strcmp(map->layers[i].name, "ground") == 0) {
-                    groundLayer = const_cast<TmxLayer*>(&map->layers[i]);
-                    break;
-                }
-            }
-        }
-    }
+    groundLayer = FindLayerByName(GameConfig::GROUND_LAYER_NAME.data());
+    // set level for death fall margin
+
+    // Spawn actors defined in TMX
+    SpawnActorsFromMap(true);
 
     // initialize the camera
     camera.zoom = 2.0f;
@@ -48,8 +44,8 @@ void GameLevel::UpdateAll() {
         }
     }
 
-    // Update player separately if present
-    if (player && player->IsAlive()) {
+    // Update player separately if present, keep updating even if dead for respawn logic
+    if (player) {
         player->Update(delta);
     }
 
@@ -71,14 +67,7 @@ void GameLevel::UpdateAll() {
     if (iterator != actors.end()) {
         actors.erase(iterator, actors.end());
     }
-
-    // If the dedicated player became dead, notify listeners and clear the slot
-    if (player && !player->IsAlive()) {
-        for (const auto& listener : removalListeners) {
-            listener(*player);
-        }
-        player.reset();
-    }
+    // do not remove player - keep for respawn
 }
 
 /**
@@ -110,8 +99,8 @@ void GameLevel::Render() {
         }
     }
 
-    // Render player last so it appears on top of other actors
-    if (player && player->IsAlive()) {
+    // Render player last so it appears on top of other actors, keep drawing even if dead for death animation
+    if (player) {
         player->Draw();
     }
 
@@ -125,23 +114,74 @@ Player* GameLevel::GetPlayer() const {
     return player.get();
 }
 
+float GameLevel::GetMapBottom() const {
+    if (map == nullptr) return 0.0f;
+    return map->height * map->tileHeight;
+}
+
 /**
- * @brief Find and return the tile layer named "ground".
+ * @brief Utility: find a layer by name.
  */
-TmxLayer* GameLevel::GetGroundLayer() const {
-    TmxLayer* result = nullptr;
-    if (map == nullptr) {
-        return result;
+const TmxLayer* GameLevel::FindLayerByName(const char* name) const {
+    if (map == nullptr || name == nullptr) return nullptr;
+    for (uint32_t i = 0; i < map->layersLength; ++i) {
+        if (map->layers[i].name && strcmp(map->layers[i].name, name) == 0) {
+            return &map->layers[i];
+        }
+    }
+    return nullptr;
+}
+
+/**
+ * @brief Spawn actors from the TMX "actors" layer.
+ */
+void GameLevel::SpawnActorsFromMap(bool createPlayer) {
+    const TmxLayer* actorsLayer = FindLayerByName(GameConfig::ACTORS_LAYER_NAME.data());
+    if (actorsLayer == nullptr || actorsLayer->type != LAYER_TYPE_OBJECT_GROUP) {
+        return;
     }
 
-    for (uint32_t i = 0; i < map->layersLength; ++i) {
-        if (map->layers[i].type == LAYER_TYPE_TILE_LAYER) {
-            if (strcmp(map->layers[i].name, "ground") == 0) {
-                result = const_cast<TmxLayer*>(&map->layers[i]);
-                break;
+    const TmxObjectGroup& group = actorsLayer->exact.objectGroup;
+    for (uint32_t i = 0; i < group.objectsLength; ++i) {
+        const TmxObject& obj = group.objects[i];
+        if (obj.visible && obj.name != nullptr) {
+            // Position from Tiled is top-left - that is what the actors expect
+            if (strcmp(obj.name, GameConfig::PLAYER_OBJECT_NAME.data()) == 0) {
+                // Create player if not existing yet
+                if (createPlayer || !player) {
+                    addActor<Player>(obj.x, obj.y,
+                                    PlayerConfig::DEFAULT_JUMP_STRENGTH,
+                                    PlayerConfig::DEFAULT_MOVE_SPEED,
+                                    PlayerConfig::IDLE_ANIM,
+                                    PlayerConfig::WALK_ANIM,
+                                    PlayerConfig::JUMP_ANIM,
+                                    PlayerConfig::FALL_ANIM);
+                } else {
+                    // Move existing player to start position
+                    player->SetPosition(obj.x, obj.y);
+                }
+            } else if (strcmp(obj.name, GameConfig::ZOMBIE_OBJECT_NAME.data()) == 0) {
+                addActor<Enemy>(obj.x, obj.y,
+                                EnemyConfig::DEFAULT_MOVE_SPEED,
+                                EnemyConfig::IDLE_ANIM,
+                                EnemyConfig::WALK_ANIM);
             }
         }
     }
+}
 
-    return result;
+/**
+ * @brief Reset level: keep Player instance, move to start, respawn other actors from TMX.
+ */
+void GameLevel::Reset() {
+    // Clear all actions from GameLogic
+    GameLogic::Instance().Cleanup();
+    // Remove non-player actors
+    actors.clear();
+    // Recreate non-player actors from map and move player to start position
+    SpawnActorsFromMap(false);
+    // reset player state
+    if (player) {
+        player->ResetState();
+    }
 }

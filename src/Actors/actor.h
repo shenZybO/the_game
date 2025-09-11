@@ -79,14 +79,24 @@ class Actor {
      *
      * Sets the internal alive flag to false.
      */
-    void Destroy() {
+    virtual void Destroy() {
         alive = false;  // Mark the actor as not alive
     }
 
     /**
      * @brief Get current world position of the actor.
      */
-    Vector2& GetPosition() { return position; }
+    const Vector2& GetPosition() const noexcept { return position; }
+
+    /**
+     * @brief Set current world position of the actor.
+     */
+    void SetPosition(float x, float y) noexcept { position = {x, y}; }
+
+    /**
+     * @brief Set current world position of the actor.
+     */
+    void SetPosition(const Vector2& p) noexcept { position = p; }
 
     /**
      * @brief Get the actor's bounding rectangle based on its animation frame size.
