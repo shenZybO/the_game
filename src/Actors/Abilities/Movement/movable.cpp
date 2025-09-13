@@ -1,6 +1,7 @@
 #include "movable.h"
 #include "gamelevel.h"
 #include "raytmx.h"
+#include <algorithm>
 
 /**
  * @brief Move the owning actor by the specified delta and clamp to map bounds.
@@ -128,7 +129,7 @@ void Movable::UpdateGroundedState(float delta) {
         float sensorWidth = body.width * MoveConfig::FOOT_SENSOR_WIDTH_RATIO;
         
         // Clamp sensor width to reasonable range
-        sensorWidth = std::max(body.width * MoveConfig::FOOT_SENSOR_MIN_WIDTH_RATIO, std::min(sensorWidth, body.width));
+        sensorWidth = std::clamp(sensorWidth, body.width * MoveConfig::FOOT_SENSOR_MIN_WIDTH_RATIO, body.width);
 
         Rectangle sensor { body.x + ((body.width - sensorWidth) * 0.5f),
                            body.y + body.height + MoveConfig::FOOT_SENSOR_GAP,

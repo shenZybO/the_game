@@ -6,6 +6,7 @@
 #include "keyboard_listener.h"
 #include "input_manager.h"
 #include "jumpable.h"
+#include "config.hpp"
 
 /**
  * @brief Player actor representing the user-controlled character.
@@ -108,7 +109,27 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
     */
     void ResetState();
 
+    /**
+     * @brief Get the current number of remaining lives.
+     */
+    int GetLives() const noexcept { return lives; }
+
+    /**
+     * @brief Set the current number of lives (clamped to [0, maxLives]).
+     */
+    void SetLives(int livesNew);
+
+    /**
+     * @brief Increase the current number of lives by one (up to maxLives).
+     */
+    void AddLife() { SetLives(lives + 1); }
+
   private:
+    // Helper to initialize player-specific settings
     void PlayerInit();
+
+    // death fade timer
     float deathTimer = 0.0f;
+    // remaining lives
+    int lives = PlayerConfig::START_LIVES;
 };

@@ -4,6 +4,7 @@
 #include "config.hpp"
 #include "asset_manager.h"
 #include "enemy.h"
+#include "texture_manager.h"
 
 /**
  * @brief Construct and initialize a GameLevel from a TMX map file.
@@ -19,7 +20,6 @@ GameLevel::GameLevel(std::string_view mapFileName) {
 
     // Cache the ground layer pointer to avoid repeated name lookups
     groundLayer = FindLayerByName(GameConfig::GROUND_LAYER_NAME.data());
-    // set level for death fall margin
 
     // Spawn actors defined in TMX
     SpawnActorsFromMap(true);
@@ -105,6 +105,8 @@ void GameLevel::Render() {
     }
 
     EndMode2D();
+    // HUD (lives, etc.) drawn after world but before FPS
+    DrawHUD();
     DrawFPS(10, 10);
     EndDrawing();
 }
@@ -183,5 +185,44 @@ void GameLevel::Reset() {
     // reset player state
     if (player) {
         player->ResetState();
+    }
+}
+
+void GameLevel::GameOver() {
+    levelState = LevelState::LEVEL_NO_LIVES;
+}
+
+void GameLevel::DrawHUD() {
+    if (player) {
+        // Draw lives as heart icons in upper-right corner
+        Texture2D& fullTex = TextureManager::Instance().GetTexture(PlayerConfig::HEART_FULL_TEXTURE);
+        Texture2D& emptyTex = TextureManager::Instance().GetTexture(PlayerConfig::HEART_EMPTY_TEXTURE);
+        int tileW = map ? (int)map->tileWidth : fullTex.width;
+   
+        for (int i = 0; i < PlayerConfig::MAX_LIVES; ++i) {
+            int x = Config::SCREEN_WIDTH - ((PlayerConfig::MAX_LIVES - i) * tileW);
+            Texture2D& lifeTexture = (i < player->GetLives()) ? fullTex : emptyTex;
+            DrawTexture(lifeTexture, x, 0, WHITE);
+        }
+    }
+
+    // TODO: game over message only temporarily here - move to class handling
+    // level/game state one implementation exists
+    if (levelState == LevelState::LEVEL_NO_LIVES) {
+        int fontSize = 40;
+        int w = MeasureText(GameConfig::GAME_OVER_TEXT.data(), fontSize);
+        int x = (Config::SCREEN_WIDTH - w) / 2;
+        int y = Config::SCREEN_HEIGHT / 3;
+
+        // draw shadow and main text
+        DrawText(GameConfig::GAME_OVER_TEXT.data(), x + 2, y + 2, fontSize, BLACK);
+        DrawText(GameConfig::GAME_OVER_TEXT.data(), x, y, fontSize, RED);
+
+        // After short delay exit
+        static float goTimer = 0.0f;
+        goTimer += GetFrameTime();
+        if (goTimer > 1.5f) {
+            levelState = LevelState::LEVEL_GAME_OVER;
+        }
     }
 }

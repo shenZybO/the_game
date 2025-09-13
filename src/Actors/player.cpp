@@ -1,6 +1,7 @@
 #include "player.h"
 #include "raytmx.h"
 #include <cstring>
+#include <algorithm>
 #include "move.h"
 #include "gamelogic.h"
 #include "gamelevel.h"
@@ -42,10 +43,12 @@ void Player::Update(float delta) {
     if (actorState == Actor::STATE_DYING) {
         deathTimer += delta;
         if (deathTimer >= PlayerConfig::DEATH_FADE_DURATION) {
-            // Reset level after fade completes
-            gameLevel.Reset();
-            // Clear dying state for next life
- 
+            SetLives(lives - 1);
+            if (lives > 0) {
+                gameLevel.Reset(); // Reset level after fade completes
+            } else {
+                gameLevel.GameOver(); // no more lives, game over
+            } 
         }
         return;
     }
@@ -122,5 +125,9 @@ void Player::ResetState() {
     actorState = Actor::STATE_IDLE;
     alive = true;
     deathTimer = 0.0f;
+}
+
+void Player::SetLives(int livesNew) { 
+    lives = std::clamp(livesNew, 0, PlayerConfig::MAX_LIVES); 
 }
 

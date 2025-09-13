@@ -21,6 +21,7 @@ namespace GameConfig {
     inline constexpr std::string_view ACTORS_LAYER_NAME = "actors";
     inline constexpr std::string_view PLAYER_OBJECT_NAME = "Player";
     inline constexpr std::string_view ZOMBIE_OBJECT_NAME = "Zombie";
+    inline constexpr std::string_view GAME_OVER_TEXT = "GAME OVER";
 }
 
 namespace MoveConfig {
@@ -46,6 +47,14 @@ namespace PlayerConfig {
     inline constexpr GameTypes::AnimationData FALL_ANIM { "sprites/player_fall.png", 1, 0.1f, 5.0f, 0.0f };
     inline constexpr bool CAN_DOUBLE_JUMP = true;  // If true, grant exactly one extra jump while airborne (total 2 jumps)
     inline constexpr float DEATH_FADE_DURATION = 0.8f; // seconds
+    // Lives configuration
+    inline constexpr int MAX_LIVES = 6;
+    inline constexpr int START_LIVES = 3;
+    static_assert(MAX_LIVES > 0, "PlayerConfig::MAX_LIVES must be > 0");
+    static_assert(START_LIVES >= 0, "PlayerConfig::START_LIVES must be >= 0");
+    static_assert(START_LIVES <= MAX_LIVES, "PlayerConfig::START_LIVES must be <= PlayerConfig::MAX_LIVES");
+    inline constexpr std::string_view HEART_FULL_TEXTURE = "sprites/hud_heart.png";
+    inline constexpr std::string_view HEART_EMPTY_TEXTURE = "sprites/hud_heart_empty.png";
 
     // Default physics collider (tune as needed to fit art); values in pixels
     inline constexpr float COLLIDER_WIDTH = 48.0f;

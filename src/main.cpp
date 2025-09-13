@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     // create the first level (just demo level) - will add level switching and simple menu later
     GameLevel gameLevel0{GameConfig::LEVELS[0]};
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !gameLevel0.IsGameOver()) {
         // Poll input and dispatch events
         InputManager::Instance().Update();
 

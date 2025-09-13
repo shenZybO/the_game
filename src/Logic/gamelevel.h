@@ -17,6 +17,15 @@
  */
 class GameLevel {
    public:
+
+    enum class LevelState {
+        LEVEL_RUNNING,
+        // TODO: temporary state NO_LIVES to draw "game over" before we end level (and therefore whole game)
+        LEVEL_NO_LIVES, 
+        LEVEL_GAME_OVER,
+        LEVEL_COMPLETED
+    };
+
     /**
      * @brief Construct a new GameLevel from a TMX map file.
      *
@@ -86,6 +95,18 @@ class GameLevel {
     void Reset();
 
     /**
+     * @brief Handle game over state.
+     */
+    void GameOver();
+
+    /**
+     * @brief Query whether the game is over.
+     *
+     * @return true when the game is over.
+     */
+    bool IsGameOver() const noexcept { return levelState == LevelState::LEVEL_GAME_OVER; }
+
+    /**
      * @brief Get the bottom edge of the map.
      *
      * @return float The y-coordinate of the bottom edge of the map.
@@ -97,6 +118,9 @@ class GameLevel {
     const TmxLayer* FindLayerByName(const char* name) const;
     // Helper to spawn actors from the TMX actors layer
     void SpawnActorsFromMap(bool createPlayer);
+    // Helper to draw the HUD (lives, score, etc.)
+    void DrawHUD();
+
     TmxMap* map = nullptr;  // Pointer to the TMX map
     // Cached pointer to the tile layer named "ground" (non-owning)
     const TmxLayer* groundLayer = nullptr;
@@ -108,4 +132,6 @@ class GameLevel {
     std::vector<std::function<void(const Actor&)>> removalListeners;
     // camera object for rendering
     Camera2D camera = {0};
+    // level state
+    LevelState levelState = LevelState::LEVEL_RUNNING;
 };

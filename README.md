@@ -1,9 +1,9 @@
 # the_game
 
-A small 2D platformer prototype implemented in modern C++ (C++20) as a learning exercise.
+A small 2D platformer prototype implemented in modern C++ as a learning exercise.
 
 ## Status
-   -- This project is a work in progress and was developed purely to learn modern C++ and simple game programming patterns. It may never reach a "finished" state.
+   - This project is a work in progress and was developed purely to learn modern C++ and simple game programming patterns. It may, and probably never wiil, reach a "finished" state.
 
 ## Libraries and resources
    - raylib — simple and portable C library for games and multimedia (graphics, input, audio).
@@ -16,7 +16,7 @@ A small 2D platformer prototype implemented in modern C++ (C++20) as a learning 
    - Git
 
 ## TODOs
-   - Health system for player with collecting health (including graphical representation)
+   - Health system for player with collecting health (including graphical representation) [IN PROGRESS]
    - Implement dying of actors - level restart / game over [IN PROGRESS]
    - Add way to complete a level by reaching an exit point
    - Resolve collision between player and enemies
