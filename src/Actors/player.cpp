@@ -7,6 +7,7 @@
 #include "gamelevel.h"
 #include "jump.h"
 #include "types.h"
+#include "collision_system.h"
 
 // Destructor is defined inline in header (unregisters input listener)
 
@@ -110,7 +111,8 @@ void Player::OnKeyReleased(int key) {
 }
 
     void Player::PlayerInit() {
-      InputManager::Instance().RegisterListener(this);
+            InputManager::Instance().RegisterListener(this);
+        CollisionSystem::Instance().RegisterListener(this);
       /*
       * Configure a fixed physics collider so animation frame size changes do not
       * affect collision and ground detection.
@@ -129,5 +131,12 @@ void Player::ResetState() {
 
 void Player::SetLives(int livesNew) { 
     lives = std::clamp(livesNew, 0, PlayerConfig::MAX_LIVES); 
+}
+
+void Player::OnCollision(Actor& self, Actor& other, const Rectangle& overlap) {
+    if (&self == &other) return;
+    if (actorState == Actor::STATE_DYING) return;
+    // Placeholder: react to any collision by initiating death sequence
+    Destroy();
 }
 

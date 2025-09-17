@@ -86,6 +86,7 @@ add_executable(the_game
   src/Actors/Abilities/Movement/patrolable.cpp
   src/Actors/enemy.cpp
   src/Helpers/texture_manager.cpp
+  src/Logic/collision_system.cpp
 )
 
 # Only need to link raylib + raytmx (hoxml comes automatically)

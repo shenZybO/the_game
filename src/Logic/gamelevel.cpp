@@ -5,6 +5,7 @@
 #include "asset_manager.h"
 #include "enemy.h"
 #include "texture_manager.h"
+#include "collision_system.h"
 
 /**
  * @brief Construct and initialize a GameLevel from a TMX map file.
@@ -68,6 +69,9 @@ void GameLevel::UpdateAll() {
         actors.erase(iterator, actors.end());
     }
     // do not remove player - keep for respawn
+
+    // Run collision detection after all movement/animation updates
+    CollisionSystem::Instance().Update(actors, player.get());
 }
 
 /**

@@ -30,6 +30,14 @@ class Patrolable : virtual public Movable {
         void Update(float delta);
 
     protected:
+    /**
+     * @brief Reverse current patrol movement direction (if in Moving state).
+     *
+     * Deregisters the active move action so a new one for the opposite
+     * direction can be scheduled on the next update tick. Used by the
+     * collision system when encountering horizontal obstacles.
+     */
+        void ReversePatrolDirection();
 
     private:
         PatrolState state = PatrolState::FallingToGround;

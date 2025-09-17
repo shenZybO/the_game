@@ -7,6 +7,8 @@
 #include "input_manager.h"
 #include "jumpable.h"
 #include "config.hpp"
+#include "collision_listener.h"
+#include "collision_system.h"
 
 /**
  * @brief Player actor representing the user-controlled character.
@@ -15,7 +17,7 @@
  * itself with the `InputManager` to receive keyboard events and updates animation
  * and physics state each frame.
  */
-class Player : public Actor, virtual public Movable, public Jumpable, public KeyboardListener {
+class Player : public Actor, virtual public Movable, public Jumpable, public KeyboardListener, public ICollisionListener {
    public:
     /**
      * @brief Construct a new Player instance.
@@ -70,6 +72,7 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      */
     ~Player() { 
       InputManager::Instance().UnregisterListener(this); 
+      CollisionSystem::Instance().UnregisterListener(this);
     }
     // Non-copyable/movable: listener registration ties lifetime to this instance
     Player(const Player&) = delete;
@@ -108,6 +111,13 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
     * @brief Reset player state to initial conditions (alive, idle, no death timer).
     */
     void ResetState();
+
+    /**
+    * @brief Collision callback from CollisionSystem.
+    */
+    void OnCollision(Actor& self, Actor& other, const Rectangle& overlap) override;
+  
+    Actor& GetCollisionActor() override { return *this; }
 
     /**
      * @brief Get the current number of remaining lives.

@@ -60,3 +60,14 @@ void Patrolable::Update(float delta) {
             }
     }
 }
+
+void Patrolable::ReversePatrolDirection() {
+    patrolDir = (patrolDir == GameTypes::Direction::Left) ? GameTypes::Direction::Right : GameTypes::Direction::Left;
+    // If currently moving and have an active move action, deregister so a new one will be added next update
+    if (state == PatrolState::Moving) {
+        if (activeMoveAction) {
+            GameLogic::Instance().DeregisterAction(activeMoveAction);
+            activeMoveAction = nullptr;
+        }
+    }
+}
