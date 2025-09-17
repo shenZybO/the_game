@@ -17,19 +17,19 @@ void Move::OnPerform(float delta) {
 
     float displacement = speed * delta;
     switch (moveDir) {
-      case GameTypes::Direction::Left:
-        movableActor->MoveBy(-displacement, 0.0f);
-        // keep horizontal velocity in sync for drawing/facing logic
-        movableActor->SetVelocityX(-speed);
-        break;
-      case GameTypes::Direction::Right:
-        movableActor->MoveBy(displacement, 0.0f);
-        // keep horizontal velocity in sync for drawing/facing logic
-        movableActor->SetVelocityX(speed);
-        break;
-      default:
-        movableActor->SetVelocityX(0.0f);
-        return; // invalid direction
+        case GameTypes::Direction::Left:
+            movableActor->MoveBy(-displacement, 0.0f);
+            // keep horizontal velocity in sync for drawing/facing logic
+            movableActor->SetVelocityX(-speed);
+            break;
+        case GameTypes::Direction::Right:
+            movableActor->MoveBy(displacement, 0.0f);
+            // keep horizontal velocity in sync for drawing/facing logic
+            movableActor->SetVelocityX(speed);
+            break;
+        default:
+            movableActor->SetVelocityX(0.0f);
+            return;  // invalid direction
     }
 }
 

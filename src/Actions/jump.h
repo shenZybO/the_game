@@ -9,12 +9,13 @@
  * upward impulse.
  */
 class Jump : public Action {
-   public:
+public:
     /**
      * @brief Construct a Jump action.
      *
      * @param target Actor to jump (expected to be Jumpable).
-     * @param customJumpStrength Optional jump strength override (0 uses Jumpable::GetJumpStrength()).
+     * @param customJumpStrength Optional jump strength override (0 uses
+     * Jumpable::GetJumpStrength()).
      */
     Jump(Actor& target, float customJumpStrength = 0.0f)
         : Action(target, 0.0f, true), customJumpStrength(customJumpStrength) {}
@@ -28,6 +29,6 @@ class Jump : public Action {
      */
     void OnPerform(float delta) override;
 
-   private:
-    float customJumpStrength;  /**< Optional override for jump strength. */
+private:
+    float customJumpStrength; /**< Optional override for jump strength. */
 };

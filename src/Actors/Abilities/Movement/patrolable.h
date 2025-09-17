@@ -13,23 +13,21 @@
  * tiles to determine edges. The class expects `self` to be a Movable/Actor.
  */
 class Patrolable : virtual public Movable {
-    public:
-        enum class PatrolState { FallingToGround, Moving, Waiting };
-        
-        Patrolable() 
-            : Movable(*this),
-            rng(std::random_device{}()) {}
+public:
+    enum class PatrolState { FallingToGround, Moving, Waiting };
 
-        ~Patrolable() override = default;
-        
-        /**
-         * @brief Update patrol state and schedule/cleanup movement actions.
-         *
-         * @param delta Time in seconds since last frame.
-         */
-        void Update(float delta);
+    Patrolable() : Movable(*this), rng(std::random_device{}()) {}
 
-    protected:
+    ~Patrolable() override = default;
+
+    /**
+     * @brief Update patrol state and schedule/cleanup movement actions.
+     *
+     * @param delta Time in seconds since last frame.
+     */
+    void Update(float delta);
+
+protected:
     /**
      * @brief Reverse current patrol movement direction (if in Moving state).
      *
@@ -37,11 +35,11 @@ class Patrolable : virtual public Movable {
      * direction can be scheduled on the next update tick. Used by the
      * collision system when encountering horizontal obstacles.
      */
-        void ReversePatrolDirection();
+    void ReversePatrolDirection();
 
-    private:
-        PatrolState state = PatrolState::FallingToGround;
-        float waitTimer = 0.0f;
-        std::mt19937 rng{std::random_device{}()};
-        GameTypes::Direction patrolDir = GameTypes::Direction::Right;
+private:
+    PatrolState state = PatrolState::FallingToGround;
+    float waitTimer = 0.0f;
+    std::mt19937 rng{std::random_device{}()};
+    GameTypes::Direction patrolDir = GameTypes::Direction::Right;
 };

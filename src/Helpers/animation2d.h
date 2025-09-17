@@ -11,7 +11,7 @@
  * depending on the constructor used.
  */
 class Animation2D {
-   public:
+public:
     /**
      * @brief Construct an Animation2D and load a texture from file.
      *
@@ -84,12 +84,12 @@ class Animation2D {
      */
     Vector2 GetDrawOffset() const noexcept { return drawOffset; }
 
-   private:
-    Texture2D* texture; /**< Non-owning pointer to underlying texture. */
-    int frameCount;    /**< Number of frames in the texture horizontally. */
+private:
+    Texture2D* texture;  /**< Non-owning pointer to underlying texture. */
+    int frameCount;      /**< Number of frames in the texture horizontally. */
     float frameDuration; /**< Duration in seconds per frame. */
-    int currentFrame; /**< Index of the current frame. */
-    float timer;      /**< Accumulated time used to advance frames. */
+    int currentFrame;    /**< Index of the current frame. */
+    float timer;         /**< Accumulated time used to advance frames. */
     // no ownership; textures are managed by TextureManager
     Vector2 drawOffset{0.0f, 0.0f}; /**< Visual offset applied when drawing. */
 };

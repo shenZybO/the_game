@@ -51,18 +51,17 @@ void GameLevel::UpdateAll() {
     }
 
     // Cleanup dead actors and noify removal listeners
-    auto iterator =
-        std::remove_if(actors.begin(), actors.end(), [&](const std::unique_ptr<Actor>& actor) {
-            // Check if the actor is not alive (destroyed)
-            if (!actor->IsAlive()) {
-                // Notify all removal listeners
-                for (const auto& listener : removalListeners) {
-                    listener(*actor);
-                }
-                return true;  // Remove this actor
+    auto iterator = std::remove_if(actors.begin(), actors.end(), [&](const std::unique_ptr<Actor>& actor) {
+        // Check if the actor is not alive (destroyed)
+        if (!actor->IsAlive()) {
+            // Notify all removal listeners
+            for (const auto& listener : removalListeners) {
+                listener(*actor);
             }
-            return false;  // Keep this actor
-        });
+            return true;  // Remove this actor
+        }
+        return false;  // Keep this actor
+    });
 
     // Erase the dead actors from the vector
     if (iterator != actors.end()) {
@@ -103,7 +102,8 @@ void GameLevel::Render() {
         }
     }
 
-    // Render player last so it appears on top of other actors, keep drawing even if dead for death animation
+    // Render player last so it appears on top of other actors, keep drawing even if dead for death
+    // animation
     if (player) {
         player->Draw();
     }
@@ -155,21 +155,15 @@ void GameLevel::SpawnActorsFromMap(bool createPlayer) {
             if (strcmp(obj.name, GameConfig::PLAYER_OBJECT_NAME.data()) == 0) {
                 // Create player if not existing yet
                 if (createPlayer || !player) {
-                    addActor<Player>(obj.x, obj.y,
-                                    PlayerConfig::DEFAULT_JUMP_STRENGTH,
-                                    PlayerConfig::DEFAULT_MOVE_SPEED,
-                                    PlayerConfig::IDLE_ANIM,
-                                    PlayerConfig::WALK_ANIM,
-                                    PlayerConfig::JUMP_ANIM,
-                                    PlayerConfig::FALL_ANIM);
+                    addActor<Player>(obj.x, obj.y, PlayerConfig::DEFAULT_JUMP_STRENGTH,
+                                     PlayerConfig::DEFAULT_MOVE_SPEED, PlayerConfig::IDLE_ANIM, PlayerConfig::WALK_ANIM,
+                                     PlayerConfig::JUMP_ANIM, PlayerConfig::FALL_ANIM);
                 } else {
                     // Move existing player to start position
                     player->SetPosition(obj.x, obj.y);
                 }
             } else if (strcmp(obj.name, GameConfig::ZOMBIE_OBJECT_NAME.data()) == 0) {
-                addActor<Enemy>(obj.x, obj.y,
-                                EnemyConfig::DEFAULT_MOVE_SPEED,
-                                EnemyConfig::IDLE_ANIM,
+                addActor<Enemy>(obj.x, obj.y, EnemyConfig::DEFAULT_MOVE_SPEED, EnemyConfig::IDLE_ANIM,
                                 EnemyConfig::WALK_ANIM);
             }
         }
@@ -202,7 +196,7 @@ void GameLevel::DrawHUD() {
         Texture2D& fullTex = TextureManager::Instance().GetTexture(PlayerConfig::HEART_FULL_TEXTURE);
         Texture2D& emptyTex = TextureManager::Instance().GetTexture(PlayerConfig::HEART_EMPTY_TEXTURE);
         int tileW = map ? (int)map->tileWidth : fullTex.width;
-   
+
         for (int i = 0; i < PlayerConfig::MAX_LIVES; ++i) {
             int x = Config::SCREEN_WIDTH - ((PlayerConfig::MAX_LIVES - i) * tileW);
             Texture2D& lifeTexture = (i < player->GetLives()) ? fullTex : emptyTex;

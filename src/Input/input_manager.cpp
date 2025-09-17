@@ -27,5 +27,3 @@ void InputManager::Update() {
         }
     }
 }
-
-

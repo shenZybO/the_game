@@ -13,7 +13,7 @@
  * UnloadAll() once at shutdown to free all textures.
  */
 class TextureManager {
-  public:
+public:
     static TextureManager& Instance();
 
     /**
@@ -30,11 +30,11 @@ class TextureManager {
      */
     void UnloadAll();
 
-  private:
+private:
     TextureManager() = default;
     ~TextureManager();
     TextureManager(const TextureManager&) = delete;
     TextureManager& operator=(const TextureManager&) = delete;
 
-    std::unordered_map<std::string, Texture2D> cache; // keyed by file name
+    std::unordered_map<std::string, Texture2D> cache;  // keyed by file name
 };

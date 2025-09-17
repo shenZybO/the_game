@@ -10,7 +10,7 @@
  * Ownership of `Action` instances is transferred to [`GameLogic`](src/Logic/gamelogic.h).
  */
 class Action {
-   public:
+public:
     /**
      * @brief Construct an Action.
      *
@@ -33,10 +33,10 @@ class Action {
      */
     void Perform(float delta) {
         if (IsExpired()) {
-            return; // already performed once, skip further calls
+            return;  // already performed once, skip further calls
         }
         OnPerform(delta);
-        performedOnce = true; // mark that the oneShot action has been performed
+        performedOnce = true;  // mark that the oneShot action has been performed
     }
 
     /**
@@ -67,12 +67,12 @@ class Action {
      */
     bool IsExpired() const { return (IsTimed() && (elapsed >= duration)) || (oneShot && performedOnce); }
 
-   protected:
-    Actor& actor;    /**< Non-owning reference to the actor target. */
-    float duration;  /**< Seconds; 0 means infinite. */
-    bool oneShot;    /**< If true, action is performed only once per registration. */
+protected:
+    Actor& actor;               /**< Non-owning reference to the actor target. */
+    float duration;             /**< Seconds; 0 means infinite. */
+    bool oneShot;               /**< If true, action is performed only once per registration. */
     bool performedOnce = false; /**< Tracks if one-shot action already ran. */
-    float elapsed;   /**< Accumulated seconds. */
+    float elapsed;              /**< Accumulated seconds. */
 
     /**
      * @brief Hook for derived implementations; called by `Perform`.

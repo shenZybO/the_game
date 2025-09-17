@@ -11,7 +11,7 @@
  * in the specified direction until deregistered.
  */
 class Move : public Action {
-   public:
+public:
     /**
      * @brief Construct a Move action.
      *
@@ -31,7 +31,7 @@ class Move : public Action {
      */
     void OnPerform(float delta) override;
 
-   private:
+private:
     const GameTypes::Direction moveDir; /**< Direction of motion. */
     float customSpeed;                  /**< Optional speed override. */
 };

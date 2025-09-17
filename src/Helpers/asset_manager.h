@@ -8,7 +8,7 @@
  * returned unchanged.
  */
 class AssetManager {
-    public:
+public:
     /**
      * @brief Set the root folder for asset resolution.
      *
@@ -17,9 +17,7 @@ class AssetManager {
      *
      * @param root Filesystem path to the asset root.
      */
-    static void SetAssetRoot(const std::filesystem::path& root) {
-        assetRoot = root;
-    }
+    static void SetAssetRoot(const std::filesystem::path& root) { assetRoot = root; }
 
     /**
      * @brief Convert a relative asset path into an absolute path under the configured root.
@@ -31,11 +29,11 @@ class AssetManager {
      */
     static std::filesystem::path GetAssetPath(const std::filesystem::path& relativePath) {
         if (assetRoot.empty()) {
-            return relativePath; // no root set, return as-is
+            return relativePath;  // no root set, return as-is
         }
         return assetRoot / relativePath;
     }
 
-    private:
-        inline static std::filesystem::path assetRoot;
+private:
+    inline static std::filesystem::path assetRoot;
 };

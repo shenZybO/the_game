@@ -46,10 +46,10 @@ void Player::Update(float delta) {
         if (deathTimer >= PlayerConfig::DEATH_FADE_DURATION) {
             SetLives(lives - 1);
             if (lives > 0) {
-                gameLevel.Reset(); // Reset level after fade completes
+                gameLevel.Reset();  // Reset level after fade completes
             } else {
-                gameLevel.GameOver(); // no more lives, game over
-            } 
+                gameLevel.GameOver();  // no more lives, game over
+            }
         }
         return;
     }
@@ -61,7 +61,7 @@ void Player::Update(float delta) {
  * Registers Move/Jump actions in the global GameLogic when appropriate keys are pressed.
  */
 void Player::OnKeyPressed(int key) {
-    if (actorState == Actor::STATE_DYING) return; // ignore input when dying
+    if (actorState == Actor::STATE_DYING) return;  // ignore input when dying
 
     if ((key == KEY_LEFT || key == KEY_RIGHT)) {
         GameTypes::Direction dir = (key == KEY_LEFT) ? GameTypes::Direction::Left : GameTypes::Direction::Right;
@@ -87,7 +87,7 @@ void Player::Destroy() {
         // dying already, ignore further calls
         return;
     }
-    alive = false; // Mark as not alive to prevent further input/updates
+    alive = false;  // Mark as not alive to prevent further input/updates
     SetState(Actor::STATE_DYING);
     deathTimer = 0.0f;
 
@@ -110,18 +110,16 @@ void Player::OnKeyReleased(int key) {
     }
 }
 
-    void Player::PlayerInit() {
-            InputManager::Instance().RegisterListener(this);
-        CollisionSystem::Instance().RegisterListener(this);
-      /*
-      * Configure a fixed physics collider so animation frame size changes do not
-      * affect collision and ground detection.
-      */
-      SetCollider(PlayerConfig::COLLIDER_OFFSET_X,
-            PlayerConfig::COLLIDER_OFFSET_Y,
-            PlayerConfig::COLLIDER_WIDTH,
-            PlayerConfig::COLLIDER_HEIGHT);
-    }
+void Player::PlayerInit() {
+    InputManager::Instance().RegisterListener(this);
+    CollisionSystem::Instance().RegisterListener(this);
+    /*
+     * Configure a fixed physics collider so animation frame size changes do not
+     * affect collision and ground detection.
+     */
+    SetCollider(PlayerConfig::COLLIDER_OFFSET_X, PlayerConfig::COLLIDER_OFFSET_Y, PlayerConfig::COLLIDER_WIDTH,
+                PlayerConfig::COLLIDER_HEIGHT);
+}
 
 void Player::ResetState() {
     actorState = Actor::STATE_IDLE;
@@ -129,8 +127,8 @@ void Player::ResetState() {
     deathTimer = 0.0f;
 }
 
-void Player::SetLives(int livesNew) { 
-    lives = std::clamp(livesNew, 0, PlayerConfig::MAX_LIVES); 
+void Player::SetLives(int livesNew) {
+    lives = std::clamp(livesNew, 0, PlayerConfig::MAX_LIVES);
 }
 
 void Player::OnCollision(Actor& self, Actor& other, const Rectangle& overlap) {
@@ -139,4 +137,3 @@ void Player::OnCollision(Actor& self, Actor& other, const Rectangle& overlap) {
     // Placeholder: react to any collision by initiating death sequence
     Destroy();
 }
-

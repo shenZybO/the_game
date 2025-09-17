@@ -12,13 +12,12 @@
  * The Enemy composes `Movable` and `Patrolable` to get gravity, collision and patrol behaviour.
  */
 class Enemy : public Actor, virtual public Movable, public Patrolable {
-  public:
-
-    Enemy(GameLevel& level, float x, float y,
-           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData patrolAnim)
-        : Actor(level, idleAnim, x, y),
-          Movable(*this, patrolAnim, moveSpeed),
-          Patrolable() { EnemyInit(); }
+public:
+    Enemy(GameLevel& level, float x, float y, float moveSpeed, GameTypes::AnimationData idleAnim,
+          GameTypes::AnimationData patrolAnim)
+        : Actor(level, idleAnim, x, y), Movable(*this, patrolAnim, moveSpeed), Patrolable() {
+        EnemyInit();
+    }
 
     /**
      * @brief Update enemy each frame: animations, physics and patrol logic.
@@ -32,6 +31,6 @@ class Enemy : public Actor, virtual public Movable, public Patrolable {
      */
     void Draw() override;
 
-  private:
-  void EnemyInit();
+private:
+    void EnemyInit();
 };

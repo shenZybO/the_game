@@ -16,12 +16,12 @@
  * Loads a TMX map and manages actors, rendering and per-frame updates for the level.
  */
 class GameLevel {
-   public:
-
+public:
     enum class LevelState {
         LEVEL_RUNNING,
-        // TODO: temporary state NO_LIVES to draw "game over" before we end level (and therefore whole game)
-        LEVEL_NO_LIVES, 
+        // TODO: temporary state NO_LIVES to draw "game over" before we end level (and therefore
+        // whole game)
+        LEVEL_NO_LIVES,
         LEVEL_GAME_OVER,
         LEVEL_COMPLETED
     };
@@ -113,7 +113,7 @@ class GameLevel {
      */
     float GetMapBottom() const;
 
-   private:
+private:
     // Helper to find layer by name
     const TmxLayer* FindLayerByName(const char* name) const;
     // Helper to spawn actors from the TMX actors layer

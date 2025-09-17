@@ -9,7 +9,7 @@
  * destruction to avoid dangling pointers.
  */
 class KeyboardListener {
-   public:
+public:
     virtual ~KeyboardListener() = default;
 
     /**

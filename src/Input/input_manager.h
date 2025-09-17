@@ -11,7 +11,7 @@
  * as raw pointers (non-owning); listeners must unregister themselves before destruction.
  */
 class InputManager {
-   public:
+public:
     /**
      * @brief Get the singleton instance of InputManager.
      *
@@ -45,7 +45,7 @@ class InputManager {
      */
     void Update();
 
-   private:
+private:
     InputManager() = default;
     std::vector<KeyboardListener*> listeners;
 };

@@ -25,7 +25,7 @@ Texture2D& TextureManager::GetTexture(std::string_view fileName) {
 }
 
 void TextureManager::UnloadAll() {
-    if (cache.empty()) return; // cache empty, nothing to unload
+    if (cache.empty()) return;  // cache empty, nothing to unload
     for (auto& kv : cache) {
         if (kv.second.id != 0) {
             UnloadTexture(kv.second);

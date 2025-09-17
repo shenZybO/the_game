@@ -10,7 +10,7 @@
  * Owns and updates `Action` instances, removing them when they expire.
  */
 class GameLogic {
-   public:
+public:
     static GameLogic& Instance();
 
     // register an action - ownership is transferred to GameLogic
@@ -22,11 +22,9 @@ class GameLogic {
     // Update all active actions; remove expired ones
     void Update();
 
-    void Cleanup() {
-        actions.clear();
-    }
+    void Cleanup() { actions.clear(); }
 
-   private:
+private:
     GameLogic() = default;
     ~GameLogic() = default;
     GameLogic(const GameLogic&) = delete;

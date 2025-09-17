@@ -31,8 +31,6 @@ void Enemy::EnemyInit() {
     /*
      * Configure a fixed physics collider for enemies.
      */
-    SetCollider(EnemyConfig::COLLIDER_OFFSET_X,
-          EnemyConfig::COLLIDER_OFFSET_Y,
-          EnemyConfig::COLLIDER_WIDTH,
-          EnemyConfig::COLLIDER_HEIGHT);
+    SetCollider(EnemyConfig::COLLIDER_OFFSET_X, EnemyConfig::COLLIDER_OFFSET_Y, EnemyConfig::COLLIDER_WIDTH,
+                EnemyConfig::COLLIDER_HEIGHT);
 }

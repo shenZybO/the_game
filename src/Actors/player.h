@@ -17,8 +17,12 @@
  * itself with the `InputManager` to receive keyboard events and updates animation
  * and physics state each frame.
  */
-class Player : public Actor, virtual public Movable, public Jumpable, public KeyboardListener, public ICollisionListener {
-   public:
+class Player : public Actor,
+               virtual public Movable,
+               public Jumpable,
+               public KeyboardListener,
+               public ICollisionListener {
+public:
     /**
      * @brief Construct a new Player instance.
      *
@@ -33,46 +37,37 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      * @param frameCount Frames in the sprite sheet.
      * @param frameSpeed Frame duration for animation.
      */
-    Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed, GameTypes::AnimationData idleAnim)
-        : Actor(level, idleAnim, x, y),
-          Movable(*this, moveSpeed),
-          Jumpable(jumpStrength) {
-            PlayerInit();
+    Player(GameLevel& level, float x, float y, float jumpStrength, float moveSpeed, GameTypes::AnimationData idleAnim)
+        : Actor(level, idleAnim, x, y), Movable(*this, moveSpeed), Jumpable(jumpStrength) {
+        PlayerInit();
     }
 
-    Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim)
-        : Actor(level, idleAnim, x, y),
-          Movable(*this, moveAnim),
-          Jumpable(jumpStrength) {
-            PlayerInit();
+    Player(GameLevel& level, float x, float y, float jumpStrength, float moveSpeed, GameTypes::AnimationData idleAnim,
+           GameTypes::AnimationData moveAnim)
+        : Actor(level, idleAnim, x, y), Movable(*this, moveAnim, moveSpeed), Jumpable(jumpStrength) {
+        PlayerInit();
     }
 
-    Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim,
-           GameTypes::AnimationData jumpAnim)
-        : Actor(level, idleAnim, x, y),
-          Movable(*this, moveAnim, moveSpeed),
-          Jumpable(jumpStrength, jumpAnim) {
-            PlayerInit();
+    Player(GameLevel& level, float x, float y, float jumpStrength, float moveSpeed, GameTypes::AnimationData idleAnim,
+           GameTypes::AnimationData moveAnim, GameTypes::AnimationData jumpAnim)
+        : Actor(level, idleAnim, x, y), Movable(*this, moveAnim, moveSpeed), Jumpable(jumpStrength, jumpAnim) {
+        PlayerInit();
     }
 
-    Player(GameLevel& level, float x, float y, float jumpStrength,
-           float moveSpeed, GameTypes::AnimationData idleAnim, GameTypes::AnimationData moveAnim,
-           GameTypes::AnimationData jumpAnim, GameTypes::AnimationData fallAnim)
+    Player(GameLevel& level, float x, float y, float jumpStrength, float moveSpeed, GameTypes::AnimationData idleAnim,
+           GameTypes::AnimationData moveAnim, GameTypes::AnimationData jumpAnim, GameTypes::AnimationData fallAnim)
         : Actor(level, idleAnim, x, y),
           Movable(*this, moveAnim, fallAnim, moveSpeed),
           Jumpable(jumpStrength, jumpAnim) {
-            PlayerInit();
+        PlayerInit();
     }
 
     /**
      * @brief Destroy the Player and unregister keyboard listener.
      */
-    ~Player() { 
-      InputManager::Instance().UnregisterListener(this); 
-      CollisionSystem::Instance().UnregisterListener(this);
+    ~Player() {
+        InputManager::Instance().UnregisterListener(this);
+        CollisionSystem::Instance().UnregisterListener(this);
     }
     // Non-copyable/movable: listener registration ties lifetime to this instance
     Player(const Player&) = delete;
@@ -104,19 +99,19 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
 
     /**
      * @brief Override to start a dying sequence (fade out) and reset the level.
-    */
+     */
     void Destroy() override;
 
     /**
-    * @brief Reset player state to initial conditions (alive, idle, no death timer).
-    */
+     * @brief Reset player state to initial conditions (alive, idle, no death timer).
+     */
     void ResetState();
 
     /**
-    * @brief Collision callback from CollisionSystem.
-    */
+     * @brief Collision callback from CollisionSystem.
+     */
     void OnCollision(Actor& self, Actor& other, const Rectangle& overlap) override;
-  
+
     Actor& GetCollisionActor() override { return *this; }
 
     /**
@@ -134,7 +129,7 @@ class Player : public Actor, virtual public Movable, public Jumpable, public Key
      */
     void AddLife() { SetLives(lives + 1); }
 
-  private:
+private:
     // Helper to initialize player-specific settings
     void PlayerInit();
 

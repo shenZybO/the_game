@@ -35,11 +35,10 @@ void Movable::MoveBy(float dx, float dy) {
  * @brief Update movable physics each frame: ground checks, gravity and animation selection.
  */
 void Movable::Update(float delta) {
-    if (!self.IsAlive())
-    {
+    if (!self.IsAlive()) {
         // set velocity to 0
         velocity.x = 0;
-        velocity.y = 0; 
+        velocity.y = 0;
         return;
     }
     // Update grounded state via foot sensor hysteresis after physics integration
@@ -55,11 +54,11 @@ void Movable::Update(float delta) {
     }
 
     // resolve facing direction
-    if(velocity.x < 0) {
+    if (velocity.x < 0) {
         self.SetFacingDirection(GameTypes::Direction::Left);
-    } else if(velocity.x > 0) {
+    } else if (velocity.x > 0) {
         self.SetFacingDirection(GameTypes::Direction::Right);
-    } // else keep current facing
+    }  // else keep current facing
 
     if (velocity.y < 0) {
         self.SetState(Actor::STATE_JUMPING);
@@ -76,7 +75,8 @@ void Movable::Update(float delta) {
 
     if (fallingAnimation && self.GetState() == Actor::STATE_FALLING) {
         self.SetCurrentAnimation(fallingAnimation);
-    } else if (movingAnimation && (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
+    } else if (movingAnimation &&
+               (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
         self.SetCurrentAnimation(movingAnimation);
     }
 
@@ -109,9 +109,8 @@ bool Movable::HasGroundTileAt(float worldX, float worldY) const {
     if (idx >= ground->exact.tileLayer.tilesLength) {
         return false;
     }
-    
-    return ground->exact.tileLayer.tiles[idx] != 0;
 
+    return ground->exact.tileLayer.tiles[idx] != 0;
 }
 
 /**
@@ -127,18 +126,16 @@ void Movable::UpdateGroundedState(float delta) {
 
         // calculate sensor dimensions and create rectangle
         float sensorWidth = body.width * MoveConfig::FOOT_SENSOR_WIDTH_RATIO;
-        
+
         // Clamp sensor width to reasonable range
         sensorWidth = std::clamp(sensorWidth, body.width * MoveConfig::FOOT_SENSOR_MIN_WIDTH_RATIO, body.width);
 
-        Rectangle sensor { body.x + ((body.width - sensorWidth) * 0.5f),
-                           body.y + body.height + MoveConfig::FOOT_SENSOR_GAP,
-                           sensorWidth,
-                           MoveConfig::FOOT_SENSOR_HEIGHT };
+        Rectangle sensor{body.x + ((body.width - sensorWidth) * 0.5f),
+                         body.y + body.height + MoveConfig::FOOT_SENSOR_GAP, sensorWidth,
+                         MoveConfig::FOOT_SENSOR_HEIGHT};
 
         uint32_t hitCount = 0;
-        TmxObject* collisionObjects =
-            CheckCollisionTMXTileLayersRecAllAlloc(map, ground, 1, sensor, &hitCount);
+        TmxObject* collisionObjects = CheckCollisionTMXTileLayersRecAllAlloc(map, ground, 1, sensor, &hitCount);
 
         // in case of no hits nothing to do, make sure to free memory
         if (hitCount == 0 || collisionObjects == NULL) {
@@ -158,7 +155,8 @@ void Movable::UpdateGroundedState(float delta) {
             // we don't need the collision objects anymore
             MemFree(collisionObjects);
 
-            // If grounded and moving downward (or resting), snap actor to stand on the highest ground tile
+            // If grounded and moving downward (or resting), snap actor to stand on the highest
+            // ground tile
             if (velocity.y >= 0.0f) {
                 self.SetPosition(self.GetPosition().x, highestCollisionTop - body.height + 1);
                 velocity.y = 0.0f;

@@ -2,7 +2,6 @@
 #include "gamelogic.h"
 #include "move.h"
 
-
 /**
  * @brief Per-frame update for simple patrol AI.
  *
@@ -10,7 +9,6 @@
  * when moving between edges.
  */
 void Patrolable::Update(float delta) {
-
     // If still falling until ground contact, check grounded flag set by Movable::Update
     if (state == PatrolState::FallingToGround) {
         if (IsGrounded()) {
@@ -26,7 +24,8 @@ void Patrolable::Update(float delta) {
         waitTimer -= delta;
         if (waitTimer <= 0.0f) {
             // reverse direction and resume moving
-            patrolDir = (patrolDir == GameTypes::Direction::Left) ? GameTypes::Direction::Right : GameTypes::Direction::Left;
+            patrolDir =
+                (patrolDir == GameTypes::Direction::Left) ? GameTypes::Direction::Right : GameTypes::Direction::Left;
             state = PatrolState::Moving;
         }
         return;
@@ -34,14 +33,15 @@ void Patrolable::Update(float delta) {
 
     // Determine position to check: one tile ahead at the actor's feet
     Rectangle rect = self.GetRect();
-    float footY = self.GetPosition().y + rect.height + 1.0f; // just below feet
-    float aheadX = (patrolDir == GameTypes::Direction::Left) ? (self.GetPosition().x - 1.0f) : (self.GetPosition().x + rect.width + 1.0f);
+    float footY = self.GetPosition().y + rect.height + 1.0f;  // just below feet
+    float aheadX = (patrolDir == GameTypes::Direction::Left) ? (self.GetPosition().x - 1.0f)
+                                                             : (self.GetPosition().x + rect.width + 1.0f);
 
     // check if tile under the ahead position exists; if not, stop and wait
     if (!HasGroundTileAt(aheadX, footY)) {
         // reached edge: stop and schedule wait
         state = PatrolState::Waiting;
-        waitTimer = 0.6f; // pause before turning
+        waitTimer = 0.6f;  // pause before turning
         // deregister move action if active
         if (activeMoveAction) {
             GameLogic::Instance().DeregisterAction(activeMoveAction);
@@ -51,19 +51,20 @@ void Patrolable::Update(float delta) {
     }
 
     if (state == PatrolState::Moving) {
-            // Register move action for new direction
-            if (!activeMoveAction) {
-                auto act = std::make_unique<Move>(self, patrolDir);
-                Action* raw = act.get();
-                GameLogic::Instance().RegisterAction(std::move(act));
-                activeMoveAction = raw;
-            }
+        // Register move action for new direction
+        if (!activeMoveAction) {
+            auto act = std::make_unique<Move>(self, patrolDir);
+            Action* raw = act.get();
+            GameLogic::Instance().RegisterAction(std::move(act));
+            activeMoveAction = raw;
+        }
     }
 }
 
 void Patrolable::ReversePatrolDirection() {
     patrolDir = (patrolDir == GameTypes::Direction::Left) ? GameTypes::Direction::Right : GameTypes::Direction::Left;
-    // If currently moving and have an active move action, deregister so a new one will be added next update
+    // If currently moving and have an active move action, deregister so a new one will be added
+    // next update
     if (state == PatrolState::Moving) {
         if (activeMoveAction) {
             GameLogic::Instance().DeregisterAction(activeMoveAction);

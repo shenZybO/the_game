@@ -16,7 +16,7 @@ class GameLevel;
  * and animation management used by concrete actors (players, enemies, items).
  */
 class Actor {
-   public:
+public:
     /**
      * @brief Possible runtime states for an actor.
      *
@@ -37,16 +37,14 @@ class Actor {
     // Construct with an owned Animation2D (takes ownership)
     Actor(GameLevel& level, std::unique_ptr<Animation2D> anim, float x = 0.0f, float y = 0.0f)
         : position{x, y}, defaultAnimation(std::move(anim)), gameLevel(level) {
-            currentAnimation = defaultAnimation;
-        }
+        currentAnimation = defaultAnimation;
+    }
 
     // Construct by providing animation parameters; Actor will create its own Animation2D
     Actor(GameLevel& level, GameTypes::AnimationData idleAnim, float x = 0.0f, float y = 0.0f)
-        : position{x, y},
-          defaultAnimation(std::make_shared<Animation2D>(idleAnim)),
-          gameLevel(level) {
-            currentAnimation = defaultAnimation;
-          }
+        : position{x, y}, defaultAnimation(std::make_shared<Animation2D>(idleAnim)), gameLevel(level) {
+        currentAnimation = defaultAnimation;
+    }
 
     virtual ~Actor() {
         defaultAnimation.reset();  // Ensure proper cleanup of animation
@@ -110,8 +108,7 @@ class Actor {
          * in width/height.
          */
         if (colliderSize.x > 0.0f && colliderSize.y > 0.0f) {
-            return {position.x + colliderOffset.x, position.y + colliderOffset.y,
-                    colliderSize.x, colliderSize.y};
+            return {position.x + colliderOffset.x, position.y + colliderOffset.y, colliderSize.x, colliderSize.y};
         }
 
         if (currentAnimation) {
@@ -142,9 +139,7 @@ class Actor {
     GameTypes::Direction GetFacingDirection() const noexcept { return facingDirection; }
     void SetFacingDirection(GameTypes::Direction dir) noexcept { facingDirection = dir; }
 
-    void ResetToDefaultAnimation() { 
-        currentAnimation = defaultAnimation; 
-    }
+    void ResetToDefaultAnimation() { currentAnimation = defaultAnimation; }
 
     const GameLevel& GetGameLevel() const { return gameLevel; }
 
@@ -164,15 +159,15 @@ class Actor {
         }
     }
 
-   protected:
+protected:
     Vector2 position;
     // Fixed physics collider (optional). When width/height > 0, used for all physics queries.
     Vector2 colliderOffset{0.0f, 0.0f};
     Vector2 colliderSize{0.0f, 0.0f};
     std::shared_ptr<Animation2D> defaultAnimation;  // default animation (when in default or idle state)
     std::shared_ptr<Animation2D> currentAnimation;  // current animation to be drawn
-    GameLevel& gameLevel;  // non-owning reference to the current game level
-    bool alive = true;     // flag to indicate if the actor is still alive (meaning not destroyed)
+    GameLevel& gameLevel;                           // non-owning reference to the current game level
+    bool alive = true;                  // flag to indicate if the actor is still alive (meaning not destroyed)
     ActorState actorState = STATE_IDLE; /**< Current runtime state */
     GameTypes::Direction facingDirection = GameTypes::Direction::Right; /**< Current facing direction */
 };
