@@ -47,9 +47,13 @@ namespace PlayerConfig {
     inline constexpr GameTypes::AnimationData FALL_ANIM { "sprites/player_fall.png", 1, 0.1f, 5.0f, 0.0f };
     inline constexpr bool CAN_DOUBLE_JUMP = true;  // If true, grant exactly one extra jump while airborne (total 2 jumps)
     inline constexpr float DEATH_FADE_DURATION = 0.8f; // seconds
+    inline constexpr float DAMAGE_STATE_DURATION = 1.0f; // seconds player is in "taking damage" state
+    // blinking effect when taking damage
+    inline constexpr float BLINK_DURATION = 0.1f; // seconds per blink cycle
+    inline constexpr float BLINK_MIN_ALPHA = 0.2f;  // minimum alpha value during blinking
     // Lives configuration
     inline constexpr int MAX_LIVES = 6;
-    inline constexpr int START_LIVES = 3;
+    inline constexpr int START_LIVES = 6;
     static_assert(MAX_LIVES > 0, "PlayerConfig::MAX_LIVES must be > 0");
     static_assert(START_LIVES >= 0, "PlayerConfig::START_LIVES must be >= 0");
     static_assert(START_LIVES <= MAX_LIVES, "PlayerConfig::START_LIVES must be <= PlayerConfig::MAX_LIVES");

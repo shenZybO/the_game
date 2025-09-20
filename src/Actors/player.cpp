@@ -8,8 +8,9 @@
 #include "jump.h"
 #include "types.h"
 #include "collision_system.h"
-
-// Destructor is defined inline in header (unregisters input listener)
+#include "animation2d.h"
+#include "animation2d_blinker.h"
+#include "enemy.h"
 
 /**
  * @brief Draw the player using Actor drawing logic.
@@ -17,9 +18,9 @@
 void Player::Draw() {
     // Apply fade-out when dying
     if (actorState == Actor::STATE_DYING) {
-        float alpha = 1.0f - std::min(deathTimer / PlayerConfig::DEATH_FADE_DURATION, 1.0f);
+        float alpha = 1.0f - std::min(stateTimer / PlayerConfig::DEATH_FADE_DURATION, 1.0f);
         Color tint = {255, 255, 255, static_cast<unsigned char>(alpha * 255)};
-        if (const Animation2D* anim = GetCurrentAnimation()) {
+        if (const IAnimation2D* anim = GetCurrentAnimation().get()) {
             anim->Draw(GetPosition(), GetFacingDirection() == GameTypes::Direction::Left, tint, 1.0f);
         }
     } else {
@@ -40,10 +41,17 @@ void Player::Update(float delta) {
     // Then apply physics/movement integration
     Movable::Update(delta);
 
-    // Handle dying fade and level reset
-    if (actorState == Actor::STATE_DYING) {
-        deathTimer += delta;
-        if (deathTimer >= PlayerConfig::DEATH_FADE_DURATION) {
+    if (actorState == Actor::STATE_TAKING_DAMAGE) {
+        // handle taking damage state
+        stateTimer += delta;
+        if (stateTimer >= PlayerConfig::DAMAGE_STATE_DURATION) {
+            actorState = Actor::STATE_NORMAL;
+            RefreshAnimation();
+        }
+    } else if (actorState == Actor::STATE_DYING) {
+        // Handle dying fade and level reset
+        stateTimer += delta;
+        if (stateTimer >= PlayerConfig::DEATH_FADE_DURATION) {
             SetLives(lives - 1);
             if (lives > 0) {
                 gameLevel.Reset();  // Reset level after fade completes
@@ -89,11 +97,32 @@ void Player::Destroy() {
     }
     alive = false;  // Mark as not alive to prevent further input/updates
     SetState(Actor::STATE_DYING);
-    deathTimer = 0.0f;
+    stateTimer = 0.0f;
 
     if (activeMoveAction) {
         GameLogic::Instance().DeregisterAction(activeMoveAction);
         activeMoveAction = nullptr;
+    }
+}
+
+void Player::TakeDamage() {
+    if (actorState == Actor::STATE_DYING) return;  // ignore if already dying
+
+    // Only take damage if not already in taking damage state (be invulnerable for a short time)
+    if (lives > 1 && actorState != Actor::STATE_TAKING_DAMAGE) {
+        SetLives(lives - 1);
+        actorState = Actor::STATE_TAKING_DAMAGE;
+        stateTimer = 0.0f;
+
+        // Update animation to blinking version
+        RefreshAnimation();
+
+        // Apply a jump impulse when colliding with an enemy
+        auto act = std::make_unique<Jump>(*this);
+        GameLogic::Instance().RegisterAction(std::move(act));
+    } else {
+        // No lives left, initiate death sequence
+        Destroy();
     }
 }
 
@@ -122,9 +151,9 @@ void Player::PlayerInit() {
 }
 
 void Player::ResetState() {
-    actorState = Actor::STATE_IDLE;
+    actorState = Actor::STATE_NORMAL;
     alive = true;
-    deathTimer = 0.0f;
+    stateTimer = 0.0f;
 }
 
 void Player::SetLives(int livesNew) {
@@ -134,6 +163,31 @@ void Player::SetLives(int livesNew) {
 void Player::OnCollision(Actor& self, Actor& other, const Rectangle& overlap) {
     if (&self == &other) return;
     if (actorState == Actor::STATE_DYING) return;
-    // Placeholder: react to any collision by initiating death sequence
-    Destroy();
+    // in case of collision with enemy set state to take damage
+    if (typeid(Enemy) == typeid(other) && actorState != Actor::STATE_TAKING_DAMAGE) {
+        TakeDamage();
+    }
+}
+
+void Player::SetCurrentAnimation(std::shared_ptr<IAnimation2D> anim) {
+    if (actorState == Actor::STATE_TAKING_DAMAGE) {
+        // wrap the animation to a blinking decorator
+        anim = std::make_shared<BlinkingAnimation2D>(anim, PlayerConfig::BLINK_DURATION, PlayerConfig::BLINK_MIN_ALPHA);
+    }
+    Actor::SetCurrentAnimation(anim);
+}
+
+void Player::RefreshAnimation() {
+    if (actorState == Actor::STATE_TAKING_DAMAGE) {
+        // wrap the animation to a blinking decorator
+        currentAnimation = std::make_shared<BlinkingAnimation2D>(currentAnimation, PlayerConfig::BLINK_DURATION,
+                                                                 PlayerConfig::BLINK_MIN_ALPHA);
+    } else {
+        if (typeid(*currentAnimation) == typeid(BlinkingAnimation2D)) {
+            // unwrap to get the original animation
+            if (auto blinkAnim = dynamic_cast<BlinkingAnimation2D*>(currentAnimation.get())) {
+                currentAnimation = blinkAnim->GetWrappedAnimation();
+            }
+        }
+    }
 }

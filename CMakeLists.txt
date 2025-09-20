@@ -79,6 +79,7 @@ add_executable(the_game
   src/Logic/gamelogic.cpp
   src/Input/input_manager.cpp
   src/Helpers/animation2d.cpp
+  src/Helpers/animation2d_blinker.cpp
   src/Logic/gamelevel.cpp
   src/Actors/Abilities/Movement/movable.cpp
   src/Actors/Abilities/Movement/jumpable.cpp

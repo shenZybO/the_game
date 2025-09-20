@@ -4,6 +4,7 @@
 #include "movable.h"
 #include "action.h"
 #include "animation2d.h"
+#include "ianimation2d.h"
 #include <memory>
 
 /**
@@ -72,7 +73,7 @@ public:
 
 protected:
 private:
-    float jumpStrength;                            /**< Jump impulse strength. */
-    bool doubleJumpDone = false;                   /**< Tracks if the double jump has been performed */
-    std::shared_ptr<Animation2D> jumpingAnimation; /**< Optional jumping animation; falls back to defaultAnimation */
+    float jumpStrength;                             /**< Jump impulse strength. */
+    bool doubleJumpDone = false;                    /**< Tracks if the double jump has been performed */
+    std::shared_ptr<IAnimation2D> jumpingAnimation; /**< Optional jumping animation; falls back to defaultAnimation */
 };

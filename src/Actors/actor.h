@@ -3,6 +3,8 @@
 #include "types.h"
 #include "raytmx.h"
 #include "animation2d.h"
+#include "animation2d_blinker.h"
+#include "ianimation2d.h"
 #include <memory>
 
 // Forward declare GameLevel (reference only needs this)
@@ -18,31 +20,28 @@ class GameLevel;
 class Actor {
 public:
     /**
-     * @brief Possible runtime states for an actor.
+     * @brief General (non-movement) runtime states for an actor.
      *
-     * Can be extended (jumping, falling, dying, etc.).
+     * Movement-specific states are now tracked separately by Movable.
      */
     enum ActorState {
-        STATE_IDLE = 0,
-        STATE_MOVING_LEFT,
-        STATE_MOVING_RIGHT,
-        STATE_JUMPING,
-        STATE_FALLING,
-        STATE_DYING
+        STATE_NORMAL = 0,     /// normal gameplay state
+        STATE_TAKING_DAMAGE,  /// decreases lives (e.g. contact with enemy), actor remains in level if lives > 0
+        STATE_DYING  /// actor is going to be removed e.g. fall to death (in case of Player this means level restart or
+                     /// game over)
     };
 
     // Default ctor - keeps compatibility with existing code that constructs Actor without params
     Actor() = default;
 
     // Construct with an owned Animation2D (takes ownership)
-    Actor(GameLevel& level, std::unique_ptr<Animation2D> anim, float x = 0.0f, float y = 0.0f)
-        : position{x, y}, defaultAnimation(std::move(anim)), gameLevel(level) {
-        currentAnimation = defaultAnimation;
-    }
+    Actor(GameLevel& level, std::shared_ptr<Animation2D> anim, float x = 0.0f, float y = 0.0f)
+        : position{x, y}, defaultAnimation(std::move(anim)), currentAnimation(defaultAnimation), gameLevel(level) {}
 
     // Construct by providing animation parameters; Actor will create its own Animation2D
     Actor(GameLevel& level, GameTypes::AnimationData idleAnim, float x = 0.0f, float y = 0.0f)
-        : position{x, y}, defaultAnimation(std::make_shared<Animation2D>(idleAnim)), gameLevel(level) {
+        : position{x, y}, gameLevel(level) {
+        defaultAnimation = std::make_shared<Animation2D>(idleAnim);
         currentAnimation = defaultAnimation;
     }
 
@@ -130,20 +129,49 @@ public:
     /**
      * @brief Access the current primary animation.
      *
-     * @return const Animation2D* Pointer to the animation or nullptr.
+     * @return std::shared_ptr<IAnimation2D> Pointer to the current animation (can be nullptr).
      */
-    const Animation2D* GetCurrentAnimation() const { return currentAnimation.get(); }
+    std::shared_ptr<IAnimation2D> GetCurrentAnimation() const { return currentAnimation; }
 
-    void SetCurrentAnimation(std::shared_ptr<Animation2D> anim) { currentAnimation = anim; }
+    /**
+     * @brief Change the current animation.
+     *
+     * The provided animation becomes the current animation through shared ownership.
+     * To revert to the default animation, call ResetToDefaultAnimation().
+     */
+    virtual void SetCurrentAnimation(std::shared_ptr<IAnimation2D> anim) {
+        if (anim) {
+            currentAnimation = anim;
+        }
+    }
 
+    /**
+     * @brief Get the current facing direction of the actor.
+     *
+     * @return GameTypes::Direction Current facing direction.
+     */
     GameTypes::Direction GetFacingDirection() const noexcept { return facingDirection; }
+
+    /**
+     * @brief Set the current facing direction of the actor.
+     */
     void SetFacingDirection(GameTypes::Direction dir) noexcept { facingDirection = dir; }
 
+    /**
+     * @brief Revert to the default/base animation.
+     */
     void ResetToDefaultAnimation() { currentAnimation = defaultAnimation; }
 
+    /**
+     * @brief Access the game level the actor belongs to.
+     *
+     * @return const GameLevel& Reference to the current game level.
+     */
     const GameLevel& GetGameLevel() const { return gameLevel; }
 
-    /** Base implementation of Update method
+    /**
+     * @brief Base implementation of Update method
+     *
      * Derived classes can override this to implement specific behavior
      */
     virtual void Update(float delta) {
@@ -152,7 +180,11 @@ public:
         }
     };
 
-    // Draw the actor
+    /**
+     * @brief Draw the actor.
+     *
+     * This function is responsible for rendering the actor on the screen.
+     */
     virtual void Draw() {
         if (currentAnimation) {
             currentAnimation->Draw(position, facingDirection == GameTypes::Direction::Left);
@@ -164,10 +196,10 @@ protected:
     // Fixed physics collider (optional). When width/height > 0, used for all physics queries.
     Vector2 colliderOffset{0.0f, 0.0f};
     Vector2 colliderSize{0.0f, 0.0f};
-    std::shared_ptr<Animation2D> defaultAnimation;  // default animation (when in default or idle state)
-    std::shared_ptr<Animation2D> currentAnimation;  // current animation to be drawn
-    GameLevel& gameLevel;                           // non-owning reference to the current game level
-    bool alive = true;                  // flag to indicate if the actor is still alive (meaning not destroyed)
-    ActorState actorState = STATE_IDLE; /**< Current runtime state */
+    std::shared_ptr<IAnimation2D> defaultAnimation;  // default/base animation
+    std::shared_ptr<IAnimation2D> currentAnimation;  // current animation to be drawn (can be decorator)
+    GameLevel& gameLevel;                            // non-owning reference to the current game level
+    bool alive = true;                    // flag to indicate if the actor is still alive (meaning not destroyed)
+    ActorState actorState = STATE_NORMAL; /**< Current general runtime state */
     GameTypes::Direction facingDirection = GameTypes::Direction::Right; /**< Current facing direction */
 };

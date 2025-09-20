@@ -3,7 +3,7 @@
 
 void Jumpable::DoJump(float jumpStrength) {
     velocity.y = -jumpStrength;
-    self.SetState(Actor::STATE_JUMPING);
+    SetMovementState(Movable::MovementState::Jumping);
     if (!isGrounded) {
         doubleJumpDone = true;
     }
@@ -18,7 +18,8 @@ void Jumpable::Update(float delta) {
         doubleJumpDone = false;  // reset jump state when grounded
     }
 
-    if (self.GetState() == Actor::STATE_JUMPING) {
+    if (GetPreviousMovementState() != Movable::MovementState::Jumping &&
+        GetMovementState() == Movable::MovementState::Jumping) {
         if (jumpingAnimation) {
             self.SetCurrentAnimation(jumpingAnimation);
         }

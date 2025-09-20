@@ -2,6 +2,8 @@
 
 #include <string_view>
 #include "raylib.h"
+#include "types.h"
+#include "ianimation2d.h"
 
 /**
  * @brief Simple 2D animation helper managing frames and drawing.
@@ -10,7 +12,7 @@
  * class may own the underlying `Texture2D` (and will unload it on destruction)
  * depending on the constructor used.
  */
-class Animation2D {
+class Animation2D : public IAnimation2D {
 public:
     /**
      * @brief Construct an Animation2D and load a texture from file.
@@ -36,7 +38,7 @@ public:
      *
      * @param delta Elapsed time in seconds since last update.
      */
-    void Update(float delta);
+    void Update(float delta) override;
 
     /**
      * @brief Draw the current animation frame at the given position.
@@ -46,7 +48,7 @@ public:
      * @param tint Color tint to apply to the sprite.
      * @param scale Uniform scale factor for drawing.
      */
-    void Draw(Vector2 position, bool flipped, Color tint = WHITE, float scale = 1.0f) const;
+    void Draw(Vector2 position, bool flipped, Color tint = WHITE, float scale = 1.0f) const override;
 
     /**
      * @brief Get the total number of frames.
@@ -63,26 +65,30 @@ public:
     /**
      * @brief Width of a single animation frame in pixels.
      */
-    float GetFrameWidth() const {
+    float GetFrameWidth() const override {
+        if (!texture) return 0.0f;
         return (frameCount > 0) ? ((float)texture->width / (float)frameCount) : (float)texture->width;
     }
 
     /**
      * @brief Height of a single animation frame in pixels.
      */
-    float GetFrameHeight() const { return (float)texture->height; }
+    float GetFrameHeight() const override {
+        if (!texture) return 0.0f;
+        return (float)texture->height;
+    }
 
     /**
      * @brief Set per-animation draw offset in pixels.
      *
      * Offset shifts where the sprite is drawn relative to the actor's origin.
      */
-    void SetDrawOffset(Vector2 offset) noexcept { drawOffset = offset; }
+    void SetDrawOffset(Vector2 offset) noexcept override { drawOffset = offset; }
 
     /**
      * @brief Get the current draw offset in pixels.
      */
-    Vector2 GetDrawOffset() const noexcept { return drawOffset; }
+    Vector2 GetDrawOffset() const noexcept override { return drawOffset; }
 
 private:
     Texture2D* texture;  /**< Non-owning pointer to underlying texture. */

@@ -4,6 +4,7 @@
 #include "actor.h"
 #include "action.h"
 #include "raylib.h"
+#include "ianimation2d.h"
 
 /**
  * @brief Ability mixin adding movement and basic physics to an Actor.
@@ -14,6 +15,10 @@
  */
 class Movable /* : public Actor */ {
 public:
+    /**
+     * @brief Movement-specific state tracked independently from Actor's general state.
+     */
+    enum class MovementState { Idle = 0, MovingLeft, MovingRight, Jumping, Falling };
     /**
      * @brief Construct a Movable actor with optional default animation.
      *
@@ -77,6 +82,12 @@ public:
      */
     bool IsGrounded() const { return isGrounded; }
 
+    /** Current movement state. */
+    MovementState GetMovementState() const noexcept { return movementState; }
+    void SetMovementState(MovementState s) noexcept { movementState = s; }
+
+    MovementState GetPreviousMovementState() const noexcept { return prevMovementState; }
+
     /**
      * @brief Query whether actor is moving left.
      */
@@ -123,9 +134,12 @@ protected:
 private:
     Vector2 prevPosition;
     float moveSpeed;
-    std::shared_ptr<Animation2D> movingAnimation;  /**< Optional moving animation; falls back to defaultAnimation */
-    std::shared_ptr<Animation2D> fallingAnimation; /**< Optional falling animation; falls back to defaultAnimation */
+    std::shared_ptr<IAnimation2D> movingAnimation;  /**< Optional moving animation; falls back to defaultAnimation */
+    std::shared_ptr<IAnimation2D> fallingAnimation; /**< Optional falling animation; falls back to defaultAnimation */
+    float timeSinceLastGround = 0.0f;
+    MovementState movementState = MovementState::Idle;
+    MovementState prevMovementState = MovementState::Idle;
+
     // Update grounded state using a narrow foot sensor and grace time
     void UpdateGroundedState(float delta);
-    float timeSinceLastGround = 0.0f;
 };

@@ -103,6 +103,11 @@ public:
     void Destroy() override;
 
     /**
+     * @brief Take damage and trigger appropriate reactions.
+     */
+    void TakeDamage();
+
+    /**
      * @brief Reset player state to initial conditions (alive, idle, no death timer).
      */
     void ResetState();
@@ -129,12 +134,19 @@ public:
      */
     void AddLife() { SetLives(lives + 1); }
 
-private:
-    // Helper to initialize player-specific settings
-    void PlayerInit();
+    /**
+     * @brief Override to add specific effects when changing animation (e.g. blinking).
+     */
+    void SetCurrentAnimation(std::shared_ptr<IAnimation2D> anim) override;
 
-    // death fade timer
-    float deathTimer = 0.0f;
+private:
+    // timer for timed actor states (state is left after timer runs out)
+    float stateTimer = 0.0f;
     // remaining lives
     int lives = PlayerConfig::START_LIVES;
+
+    // Helper to initialize player-specific settings
+    void PlayerInit();
+    // Re-set the current animation to apply any effects (e.g. blinking).
+    void RefreshAnimation();
 };

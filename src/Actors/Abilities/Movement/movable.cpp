@@ -44,8 +44,8 @@ void Movable::Update(float delta) {
     // Update grounded state via foot sensor hysteresis after physics integration
     UpdateGroundedState(delta);
 
-    // apply general gravity if not grounded (falling possible even for Actor not able to jump)
-    if (!isGrounded || self.GetState() == Actor::STATE_JUMPING) {
+    // apply gravity if not grounded or if currently in jumping movement state
+    if (!isGrounded || movementState == MovementState::Jumping) {
         velocity.y += MoveConfig::GRAVITY_CONSTANT * delta;  // gravity constant
         // Update vertical position
         self.SetPosition(self.GetPosition().x, self.GetPosition().y + (velocity.y * delta));
@@ -61,22 +61,23 @@ void Movable::Update(float delta) {
     }  // else keep current facing
 
     if (velocity.y < 0) {
-        self.SetState(Actor::STATE_JUMPING);
+        movementState = MovementState::Jumping;
     } else if (!isGrounded && velocity.y > 0) {
-        self.SetState(Actor::STATE_FALLING);
+        movementState = MovementState::Falling;
     } else if (velocity.x < 0) {
-        self.SetState(Actor::STATE_MOVING_LEFT);
+        movementState = MovementState::MovingLeft;
     } else if (velocity.x > 0) {
-        self.SetState(Actor::STATE_MOVING_RIGHT);
+        movementState = MovementState::MovingRight;
     } else {
-        self.SetState(Actor::STATE_IDLE);
+        movementState = MovementState::Idle;
         self.ResetToDefaultAnimation();
     }
 
-    if (fallingAnimation && self.GetState() == Actor::STATE_FALLING) {
+    if (prevMovementState != MovementState::Falling && fallingAnimation && movementState == MovementState::Falling) {
         self.SetCurrentAnimation(fallingAnimation);
-    } else if (movingAnimation &&
-               (self.GetState() == Actor::STATE_MOVING_LEFT || self.GetState() == Actor::STATE_MOVING_RIGHT)) {
+    } else if ((prevMovementState != MovementState::MovingLeft && prevMovementState != MovementState::MovingRight) &&
+               movingAnimation &&
+               (movementState == MovementState::MovingLeft || movementState == MovementState::MovingRight)) {
         self.SetCurrentAnimation(movingAnimation);
     }
 
@@ -84,6 +85,8 @@ void Movable::Update(float delta) {
     if (self.GetPosition().y > self.GetGameLevel().GetMapBottom() - MoveConfig::DEATH_FALL_MARGIN) {
         self.Destroy();
     }
+
+    prevMovementState = movementState;
 }
 
 /**
